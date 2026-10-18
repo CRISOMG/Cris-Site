@@ -5,14 +5,36 @@
 :root {
   --grand-hotel: 'Grand Hotel', cursive;
   --nova-round: 'Nova Round', cursive;
+  --font-fredoka: 'Fredoka', cursive, sans-serif;
+  --font-lexend: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Brand Identity Tokens */
+  --brand-navy: #0D222D;
+  --brand-navy-dark: #07151C;
+  --brand-surface: rgba(255, 255, 255, 0.05);
+  --brand-surface-elevated: rgba(255, 255, 255, 0.08);
+  --brand-border: rgba(255, 255, 255, 0.12);
+  --brand-border-glow: rgba(255, 170, 91, 0.35);
+  --brand-cream: #F7EFC5;
+  --brand-cream-muted: hsla(50, 76%, 87%, 0.65);
+  --brand-orange: #FFAA5B;
+  --brand-orange-deep: #D96503;
+  --brand-yellow: #FBBF24;
+  --brand-green: #6DB758;
+  --brand-green-deep: #5BA546;
+  --brand-terracotta: #AB6552;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
-    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--font-lexend, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif);
 }
 
 a {
@@ -23,3 +45,20 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #07151C;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 170, 91, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 170, 91, 0.6);
+}
+

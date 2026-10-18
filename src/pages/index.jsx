@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import SocialIcons from '../containers/SocialIcons';
 
 export default function Home() {
@@ -75,6 +76,15 @@ export default function Home() {
           <h3 className='_font-nova-round font-bold italic text-xl '>Lifelong Learner</h3>
         </div>
         <SocialIcons />
+        <div className='mt-2'>
+          <Link
+            href='/brand'
+            className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/20 hover:bg-black/35 text-white text-sm font-semibold backdrop-blur-md transition-all hover:scale-105 border border-white/25 shadow-lg'
+          >
+            <span>✨ Manual de Marca & Propuesta de Valor</span>
+            <span>&rarr;</span>
+          </Link>
+        </div>
       </main>
 
       <style jsx>{`
