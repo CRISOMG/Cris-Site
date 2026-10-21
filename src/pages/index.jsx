@@ -131,17 +131,9 @@ export default function Home() {
 
         <SocialIcons />
 
-        <div className='mt-2 flex flex-wrap items-center justify-center gap-3'>
-          <Link
-            href='/brand'
-            className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/20 hover:bg-black/35 text-white text-sm font-semibold backdrop-blur-md transition-all hover:scale-105 border border-white/25 shadow-lg'
-          >
-            <span>✨ Manual de Marca & Propuesta de Valor</span>
-            <span>&rarr;</span>
-          </Link>
-
-          {/* Solo visible si el propietario ha iniciado sesión */}
-          {isAuthenticated && (
+        {/* Solo visible si el propietario ha iniciado sesión */}
+        {isAuthenticated && (
+          <div className='mt-4 flex flex-wrap items-center justify-center gap-3'>
             <Link
               href='/private'
               className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0D222D] hover:bg-[#07151C] text-[#FFAA5B] text-sm font-semibold backdrop-blur-md transition-all hover:scale-105 border border-[#FFAA5B]/50 shadow-xl'
@@ -149,8 +141,16 @@ export default function Home() {
               <span>🔐 Bóveda Privada</span>
               <span className='text-xs bg-[#6DB758] text-white px-1.5 py-0.5 rounded-full font-mono'>Activo</span>
             </Link>
-          )}
-        </div>
+
+            <Link
+              href='/brand'
+              className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/25 hover:bg-black/40 text-white text-sm font-semibold backdrop-blur-md transition-all hover:scale-105 border border-white/25 shadow-lg'
+            >
+              <span>✨ Manual de Marca</span>
+              <span>&rarr;</span>
+            </Link>
+          </div>
+        )}
       </main>
 
       {/* Modal de Confirmación para inicio de flujo de autenticación */}

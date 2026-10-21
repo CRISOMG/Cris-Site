@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Error from 'next/error';
+import { useAuth } from '../context/AuthContext';
 
 export default function BrandManual() {
+  const { isAuthenticated, isLoading } = useAuth();
   const [copiedText, setCopiedText] = useState('');
   const [activeTab, setActiveTab] = useState('tech');
   const [activeCircle, setActiveCircle] = useState('why');
@@ -148,10 +151,16 @@ export default function BrandManual() {
     },
   };
 
+  if (isLoading) return null;
+  if (!isAuthenticated) {
+    return <Error statusCode={404} />;
+  }
+
   return (
     <div className='brand-page min-h-screen text-[#F7EFC5] selection:bg-amber-400 selection:text-slate-900'>
       <Head>
         <title>Manual de Marca | Cristian Caraballo (@CrisOMG)</title>
+        <meta name='robots' content='noindex, nofollow' />
         <meta
           name='description'
           content='Manual de Identidad Visual, Sistema de Diseño, Paleta de Colores y Propuesta de Valor de Cristian Caraballo (@CrisOMG) y Yourfocus.'

@@ -178,19 +178,44 @@ export default function PrivatePage() {
         {/* Pestaña 1: Bóveda de Recursos */}
         {activeTab === 'vault' && (
           <div className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
-              {/* Card 1: CV y Documentos */}
-              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden'>
-                <div className='flex items-center justify-between mb-4'>
-                  <span className='text-2xl'>📄</span>
-                  <span className='text-[10px] font-bold uppercase tracking-wider text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
-                    Confidencial
-                  </span>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
+              {/* Card 1: Manual de Marca & Identidad (Privado) */}
+              <div className='bg-[#0D222D] border border-[#FFAA5B]/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>🎨</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
+                      Privado
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Manual de Identidad & Marca</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Sistema de diseño completo, tokens de color CSS, tipografía, tono y voz, y arquitectura de producto Yourfocus.
+                  </p>
                 </div>
-                <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>CV & Tarifario Profesional</h3>
-                <p className='text-xs text-white/70 mb-5 leading-relaxed'>
-                  Versiones completas con pretensiones salariales, esquemas de consultoría por hora y datos de contacto directo.
-                </p>
+                <Link
+                  href='/brand'
+                  className='flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#FFAA5B] to-[#FBBF24] text-xs font-bold text-[#0D222D] shadow-md transition-transform hover:scale-[1.02]'
+                >
+                  <span>Abrir Manual de Marca</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+
+              {/* Card 2: CV y Documentos */}
+              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>📄</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
+                      Confidencial
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>CV & Tarifario Profesional</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Versiones completas con pretensiones salariales, esquemas de consultoría por hora y datos de contacto directo.
+                  </p>
+                </div>
                 <div className='space-y-2.5'>
                   <a
                     href='#'
@@ -211,24 +236,26 @@ export default function PrivatePage() {
                     }}
                     className='flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-white transition-colors border border-white/10'
                   >
-                    <span>Plantilla de Propuesta Técnica</span>
+                    <span>Plantilla de Propuesta</span>
                     <span className='text-[#FFAA5B]'>&rarr;</span>
                   </a>
                 </div>
               </div>
 
-              {/* Card 2: Enlaces a Entornos de Desarrollo */}
-              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden'>
-                <div className='flex items-center justify-between mb-4'>
-                  <span className='text-2xl'>🚀</span>
-                  <span className='text-[10px] font-bold uppercase tracking-wider text-[#6DB758] bg-[#6DB758]/10 px-2.5 py-1 rounded-full border border-[#6DB758]/20'>
-                    Infraestructura
-                  </span>
+              {/* Card 3: Enlaces a Entornos de Desarrollo */}
+              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>🚀</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-[#6DB758] bg-[#6DB758]/10 px-2.5 py-1 rounded-full border border-[#6DB758]/20'>
+                      Infraestructura
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Paneles & Staging</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Acceso directo a tus paneles de control en la nube, repositorios privados y analíticas.
+                  </p>
                 </div>
-                <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Paneles & Staging</h3>
-                <p className='text-xs text-white/70 mb-5 leading-relaxed'>
-                  Acceso directo a tus paneles de control en la nube, repositorios privados y analíticas.
-                </p>
                 <div className='space-y-2.5'>
                   <a
                     href='https://vercel.com/dashboard'
@@ -236,7 +263,7 @@ export default function PrivatePage() {
                     rel='noreferrer'
                     className='flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-white transition-colors border border-white/10'
                   >
-                    <span>Panel de Vercel &bull; Deployments</span>
+                    <span>Panel de Vercel</span>
                     <span className='text-white/40'>&nearr;</span>
                   </a>
                   <a
@@ -245,31 +272,33 @@ export default function PrivatePage() {
                     rel='noreferrer'
                     className='flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-medium text-white transition-colors border border-white/10'
                   >
-                    <span>GitHub &bull; Repositorios Privados</span>
+                    <span>GitHub Repos</span>
                     <span className='text-white/40'>&nearr;</span>
                   </a>
                 </div>
               </div>
 
-              {/* Card 3: Credenciales & Seguridad */}
-              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden'>
-                <div className='flex items-center justify-between mb-4'>
-                  <span className='text-2xl'>🛡️</span>
-                  <span className='text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20'>
-                    Seguridad
-                  </span>
+              {/* Card 4: Credenciales & Seguridad */}
+              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>🛡️</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20'>
+                      Seguridad
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Gestor de OTP & Acceso</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Autenticación por OTP en Gmail activa con validación criptográfica sin estado para Vercel.
+                  </p>
                 </div>
-                <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Gestor de OTP & Acceso</h3>
-                <p className='text-xs text-white/70 mb-5 leading-relaxed'>
-                  Tu método de autenticación está activo. Recuerda que puedes modificar tu PIN maestro en <code>.env</code> en cualquier momento.
-                </p>
                 <div className='p-3 rounded-xl bg-black/40 border border-white/10 text-xs space-y-1.5'>
                   <div className='flex justify-between text-white/60'>
                     <span>PIN Maestro:</span>
                     <span className='font-mono text-[#FFAA5B]'>Configurado</span>
                   </div>
                   <div className='flex justify-between text-white/60'>
-                    <span>Duración de sesión:</span>
+                    <span>Sesión:</span>
                     <span className='text-white/90'>24 horas</span>
                   </div>
                 </div>
