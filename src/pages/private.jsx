@@ -5,6 +5,7 @@ import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 import MetaEditorTab from '../components/MetaEditorTab';
+import FeaturesMatrixTab from '../components/FeaturesMatrixTab';
 
 export default function PrivatePage() {
   const router = useRouter();
@@ -14,21 +15,11 @@ export default function PrivatePage() {
   const [quickNote, setQuickNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
 
-  // Feature flags locales
-  const [featureFlags, setFeatureFlags] = useState({
-    vipAvailability: true,
-    showMetrics: true,
-    extendedBrandTools: true,
-  });
-
-  // Cargar notas y flags guardados
+  // Cargar notas privadas guardadas
   useEffect(() => {
     try {
       const savedNote = localStorage.getItem('cris_private_note');
       if (savedNote) setQuickNote(savedNote);
-
-      const savedFlags = localStorage.getItem('cris_feature_flags');
-      if (savedFlags) setFeatureFlags(JSON.parse(savedFlags));
     } catch (e) {}
   }, []);
 
@@ -36,12 +27,6 @@ export default function PrivatePage() {
     localStorage.setItem('cris_private_note', quickNote);
     setNoteSaved(true);
     setTimeout(() => setNoteSaved(false), 2000);
-  };
-
-  const toggleFlag = (key) => {
-    const updated = { ...featureFlags, [key]: !featureFlags[key] };
-    setFeatureFlags(updated);
-    localStorage.setItem('cris_feature_flags', JSON.stringify(updated));
   };
 
   // Protección de ruta: Si aún está cargando el estado inicial
@@ -160,7 +145,7 @@ export default function PrivatePage() {
             }`}
           >
             <span>⚡</span>
-            <span>Características Especiales</span>
+            <span>Matriz de Features & Link Tree</span>
           </button>
 
           <button
@@ -344,105 +329,8 @@ export default function PrivatePage() {
           </div>
         )}
 
-        {/* Pestaña 2: Características Especiales */}
-        {activeTab === 'features' && (
-          <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6'>
-            <div>
-              <h2 className='text-xl font-bold text-[#F7EFC5] mb-1'>Interruptores de Características Especiales</h2>
-              <p className='text-xs text-white/60'>
-                Controla en tiempo real elementos y comportamientos visibles en el sitio público.
-              </p>
-            </div>
-
-            <div className='space-y-4'>
-              {/* Feature 1 */}
-              <div className='flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10'>
-                <div className='space-y-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-semibold text-sm text-[#F7EFC5]'>
-                      Modo &quot;Open to Work VIP&quot; en el Home
-                    </span>
-                    <span className='text-[10px] px-2 py-0.5 rounded-full bg-[#FFAA5B]/20 text-[#FFAA5B] border border-[#FFAA5B]/30'>
-                      Home Público
-                    </span>
-                  </div>
-                  <p className='text-xs text-white/60'>
-                    Muestra un distintivo destacado que invita a reclutadores y clientes a contactarte prioritariamente.
-                  </p>
-                </div>
-                <button
-                  type='button'
-                  onClick={() => toggleFlag('vipAvailability')}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    featureFlags.vipAvailability ? 'bg-[#6DB758]' : 'bg-white/20'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
-                      featureFlags.vipAvailability ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Feature 2 */}
-              <div className='flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10'>
-                <div className='space-y-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-semibold text-sm text-[#F7EFC5]'>Métricas de Rendimiento & Crecimiento</span>
-                    <span className='text-[10px] px-2 py-0.5 rounded-full bg-[#6DB758]/20 text-[#6DB758] border border-[#6DB758]/30'>
-                      Analítica
-                    </span>
-                  </div>
-                  <p className='text-xs text-white/60'>
-                    Habilita la visualización de estadísticas rápidas de lectura y visitas en el Manual de Marca.
-                  </p>
-                </div>
-                <button
-                  type='button'
-                  onClick={() => toggleFlag('showMetrics')}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    featureFlags.showMetrics ? 'bg-[#6DB758]' : 'bg-white/20'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
-                      featureFlags.showMetrics ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Feature 3 */}
-              <div className='flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10'>
-                <div className='space-y-1'>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-semibold text-sm text-[#F7EFC5]'>Herramientas Extendidas de Marca</span>
-                    <span className='text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30'>
-                      Brand Hub
-                    </span>
-                  </div>
-                  <p className='text-xs text-white/60'>
-                    Desbloquea exportación de paleta de colores CSS y JSON con un clic dentro de <code>/brand</code>.
-                  </p>
-                </div>
-                <button
-                  type='button'
-                  onClick={() => toggleFlag('extendedBrandTools')}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    featureFlags.extendedBrandTools ? 'bg-[#6DB758]' : 'bg-white/20'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
-                      featureFlags.extendedBrandTools ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Pestaña 2: Matriz de Features & Link Tree */}
+        {activeTab === 'features' && <FeaturesMatrixTab />}
 
         {/* Pestaña 3: Bloc de Notas Privado */}
         {activeTab === 'notes' && (
