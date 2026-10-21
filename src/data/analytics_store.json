@@ -1,6 +1,6 @@
 {
   "summary": {
-    "totalVisits": 43,
+    "totalVisits": 45,
     "uniqueVisitorsCount": 1,
     "totalEvents": 4,
     "whatsappClicks": 0,
@@ -8,7 +8,7 @@
   },
   "daily": {
     "2026-10-21": {
-      "visits": 43,
+      "visits": 45,
       "uniques": [
         "20f4e12f9b6a"
       ],
@@ -19,11 +19,11 @@
     }
   },
   "pages": {
-    "/private": 23,
+    "/private": 24,
     "/es/inicio": 1,
     "/es/private": 1,
     "/admin": 1,
-    "/": 14,
+    "/": 15,
     "/auth": 1,
     "/brand": 2
   },
@@ -32,10 +32,26 @@
     "secret_modal_unlocked": 1
   },
   "devices": {
-    "desktop": 43,
+    "desktop": 45,
     "mobile": 0
   },
   "recentLog": [
+    {
+      "id": "0vj15o6",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/",
+      "timestamp": 1792617096832
+    },
+    {
+      "id": "wpzd7ka",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616703187
+    },
     {
       "id": "efp9bl3",
       "type": "pageview",

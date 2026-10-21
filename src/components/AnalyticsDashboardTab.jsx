@@ -58,6 +58,43 @@ export default function AnalyticsDashboardTab({ onSwitchToFeatures }) {
     }
   };
 
+  const [backingUp, setBackingUp] = useState(false);
+  const [blobBackupResult, setBlobBackupResult] = useState(null);
+
+  const handleBackupToBlob = async () => {
+    setBackingUp(true);
+    setBlobBackupResult(null);
+    try {
+      const filename = `backups/analytics-${new Date().toISOString().slice(0, 10)}.json`;
+      const res = await fetch('/api/admin/blob', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          pathname: filename,
+          content: JSON.stringify(data?.stats || {}, null, 2),
+          access: 'private',
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setBlobBackupResult({
+          success: true,
+          provider: json.blob?.provider,
+          url: json.blob?.url,
+          pathname: filename,
+        });
+        setTimeout(() => setBlobBackupResult(null), 6000);
+      }
+    } catch (err) {
+      console.error('Error backing up to blob:', err);
+    } finally {
+      setBackingUp(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className='p-16 text-center text-white/60 flex items-center justify-center gap-3'>
@@ -109,17 +146,38 @@ export default function AnalyticsDashboardTab({ onSwitchToFeatures }) {
       {/* Header Banner */}
       <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4'>
         <div>
-          <div className='flex items-center gap-2 mb-1'>
+          <div className='flex items-center gap-2.5 mb-1.5 flex-wrap'>
             <span className='text-xl'>📊</span>
             <h2 className='text-lg font-bold text-[#F7EFC5]'>Analíticas de Tráfico & Conversión en Tiempo Real</h2>
+            {data?.persistence?.provider === 'supabase' ? (
+              <span className='px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#6DB758]/20 text-[#6DB758] border border-[#6DB758]/30 flex items-center gap-1.5'>
+                <span className='w-1.5 h-1.5 rounded-full bg-[#6DB758] animate-pulse' />
+                Persistencia: Supabase PostgreSQL
+              </span>
+            ) : (
+              <span className='px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30'>
+                Persistencia: Local File System
+              </span>
+            )}
           </div>
           <p className='text-xs text-white/60 max-w-2xl leading-relaxed'>
             Medición integral de visitantes únicos, páginas vistas y clics de contacto a WhatsApp y redes sociales.
-            Totalmente compatible con Google Analytics 4, Vercel Web Analytics y el motor interno de métricas.
+            Totalmente sincronizado en la nube con Supabase, Google Analytics 4, Vercel Web Analytics y respaldos en Vercel Blob.
           </p>
         </div>
 
-        <div className='flex items-center gap-2 shrink-0'>
+        <div className='flex items-center gap-2 shrink-0 flex-wrap'>
+          <button
+            type='button'
+            onClick={handleBackupToBlob}
+            disabled={backingUp}
+            className='p-2.5 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-blue-300 hover:text-blue-100 border border-blue-500/25 transition-colors text-xs font-semibold flex items-center gap-2'
+            title='Guardar snapshot de analíticas en Vercel Blob'
+          >
+            <span>{backingUp ? '⏳' : '📦'}</span>
+            <span>{backingUp ? 'Respaldando...' : 'Respaldar en Blob'}</span>
+          </button>
+
           <button
             type='button'
             onClick={handleRefresh}
@@ -140,6 +198,19 @@ export default function AnalyticsDashboardTab({ onSwitchToFeatures }) {
           </button>
         </div>
       </div>
+
+      {/* Alerta de Respaldo en Vercel Blob exitoso */}
+      {blobBackupResult && (
+        <div className='p-4 rounded-xl bg-[#6DB758]/15 border border-[#6DB758]/30 text-xs text-[#6DB758] flex items-center justify-between gap-3 animate-fadeIn'>
+          <div className='flex items-center gap-2'>
+            <span>✓</span>
+            <span>
+              Snapshot respaldado con éxito en <strong>{blobBackupResult.provider === 'vercel-blob' ? 'Vercel Blob Cloud' : 'Vercel Blob (Fallback Local)'}</strong>: <code className='font-mono text-white/90'>{blobBackupResult.pathname}</code>
+            </span>
+          </div>
+          <button onClick={() => setBlobBackupResult(null)} className='text-white/40 hover:text-white'>✕</button>
+        </div>
+      )}
 
       {/* Modal / Confirmación de Reset */}
       {confirmReset && (

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { getServiceSupabase } from '../../../lib/supabaseClient';
 
 const STORE_PATH = path.join(process.cwd(), 'src', 'data', 'analytics_store.json');
 
@@ -138,6 +139,26 @@ export default function handler(req, res) {
   }
 
   saveStore(store);
+
+  // 3. Persistencia en la nube de Supabase (PostgreSQL en tiempo real)
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    supabase
+      .from('site_analytics')
+      .insert({
+        id: Math.random().toString(36).substring(2, 9),
+        type,
+        action: action || null,
+        label: label || null,
+        path: pagePath,
+        device,
+        referrer,
+        visitor_hash: visitorHash,
+        created_at: new Date(timestamp).toISOString(),
+      })
+      .then(() => {})
+      .catch((err) => console.error('Supabase track error:', err.message));
+  }
 
   return res.status(200).json({ ok: true });
 }

@@ -3,16 +3,36 @@ import path from 'path';
 import { exec } from 'child_process';
 import util from 'util';
 import { verifySessionToken, extractToken } from '../../../lib/authSession';
+import { getServiceSupabase } from '../../../lib/supabaseClient';
 
 const execPromise = util.promisify(exec);
 const SOCIAL_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'social.json');
 
 export default async function handler(req, res) {
-  // 1. GET: Retorna la matriz de features y enlaces sociales
+  const supabase = getServiceSupabase();
+
+  // 1. GET: Retorna la matriz de features y enlaces sociales (Supabase en tiempo real o fallback a local)
   if (req.method === 'GET') {
     try {
-      let socialData = {};
-      if (fs.existsSync(SOCIAL_FILE_PATH)) {
+      let socialData = null;
+
+      // Intentar leer configuración en tiempo real desde Supabase
+      if (supabase) {
+        try {
+          const { data: configRow } = await supabase
+            .from('site_config')
+            .select('data')
+            .eq('key', 'social')
+            .single();
+
+          if (configRow?.data) {
+            socialData = configRow.data;
+          }
+        } catch (_) {}
+      }
+
+      // Fallback al archivo local si Supabase no tiene datos
+      if (!socialData && fs.existsSync(SOCIAL_FILE_PATH)) {
         socialData = JSON.parse(fs.readFileSync(SOCIAL_FILE_PATH, 'utf8'));
       }
 
@@ -24,9 +44,10 @@ export default async function handler(req, res) {
 
       return res.status(200).json({
         success: true,
-        data: socialData,
+        data: socialData || {},
         branch: currentBranch,
         isDev: process.env.NODE_ENV !== 'production',
+        cloudSync: Boolean(supabase),
       });
     } catch (error) {
       return res.status(500).json({
@@ -80,6 +101,20 @@ export default async function handler(req, res) {
 
       fs.writeFileSync(SOCIAL_FILE_PATH, JSON.stringify(newConfig, null, 2) + '\n', 'utf8');
       results.fileSaved = true;
+
+      // Guardar también en la nube de Supabase (PostgreSQL en tiempo real)
+      if (supabase) {
+        try {
+          await supabase.from('site_config').upsert({
+            key: 'social',
+            data: newConfig,
+            updated_at: new Date().toISOString(),
+          });
+          results.supabaseSaved = true;
+        } catch (supaErr) {
+          results.supabaseError = supaErr.message;
+        }
+      }
 
       // Git Commit y/o Push
       if (gitAction === 'commit' || gitAction === 'push') {
