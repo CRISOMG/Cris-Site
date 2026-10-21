@@ -137,3 +137,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Local analytics data store
+.data/
+src/data/analytics_store.json

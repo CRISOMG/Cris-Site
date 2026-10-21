@@ -1,6 +1,6 @@
 {
   "flags": {
-    "heroGradient": "dark-blooker-amber",
+    "heroGradient": "blooker20-radial",
     "vipAvailability": true,
     "showMetrics": true,
     "extendedBrandTools": true,
@@ -20,50 +20,50 @@
   "links": {
     "whatsapp": {
       "id": "whatsapp",
-      "name": "WhatsApp",
-      "enabled": true,
       "url": "https://wa.me/584128315538?text=Hola%20Cristian,%20vi%20tu%20sitio%20web!",
+      "name": "WhatsApp",
       "color": "#25D366",
+      "enabled": true,
       "description": "Contacto directo vía chat"
     },
     "linkedin": {
       "id": "linkedin",
-      "name": "LinkedIn",
-      "enabled": true,
       "url": "https://linkedin.com/in/crisomg/",
+      "name": "LinkedIn",
       "color": "#0A66C2",
+      "enabled": true,
       "description": "Perfil profesional"
     },
     "github": {
       "id": "github",
-      "name": "GitHub",
-      "enabled": true,
       "url": "https://github.com/CRISOMG",
+      "name": "GitHub",
       "color": "#7C0052",
+      "enabled": true,
       "description": "Proyectos y repositorios"
     },
     "platzi": {
       "id": "platzi",
-      "name": "Platzi",
-      "enabled": true,
       "url": "https://platzi.com/@CrisOMG/",
+      "name": "Platzi",
       "color": "#75FF34",
+      "enabled": true,
       "description": "Perfil de estudiante"
     },
     "twitter": {
       "id": "twitter",
-      "name": "Twitter / X",
-      "enabled": false,
       "url": "https://twitter.com/_crisomg",
+      "name": "Twitter / X",
       "color": "#349DFF",
+      "enabled": false,
       "description": "Cuenta de X / Twitter (Oculto)"
     },
     "figma": {
       "id": "figma",
-      "name": "Figma",
-      "enabled": false,
       "url": "https://figma.com/@CrisOMg/",
+      "name": "Figma",
       "color": "#F24E1E",
+      "enabled": false,
       "description": "Diseños y prototipos (Oculto)"
     }
   }

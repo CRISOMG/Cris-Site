@@ -3,13 +3,24 @@ import path from 'path';
 import { verifySessionToken, extractToken } from '../../../lib/authSession';
 import { getServiceSupabase } from '../../../lib/supabaseClient';
 
-const STORE_PATH = path.join(process.cwd(), 'src', 'data', 'analytics_store.json');
+// Usar directorio .data/ fuera de src/ para evitar ciclos de Fast Refresh en Next.js
+const STORE_DIR = path.join(process.cwd(), '.data');
+const STORE_PATH = path.join(STORE_DIR, 'analytics_store.json');
+const LEGACY_PATH = path.join(process.cwd(), 'src', 'data', 'analytics_store.json');
 const SOCIAL_PATH = path.join(process.cwd(), 'src', 'data', 'social.json');
 
 function getStore() {
   try {
     if (fs.existsSync(STORE_PATH)) {
       return JSON.parse(fs.readFileSync(STORE_PATH, 'utf8'));
+    }
+    if (fs.existsSync(LEGACY_PATH)) {
+      const data = JSON.parse(fs.readFileSync(LEGACY_PATH, 'utf8'));
+      try {
+        if (!fs.existsSync(STORE_DIR)) fs.mkdirSync(STORE_DIR, { recursive: true });
+        fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf8');
+      } catch (_) {}
+      return data;
     }
   } catch (_) {}
   return {

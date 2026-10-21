@@ -18,14 +18,26 @@ export function getAnalyticsConfig() {
   };
 }
 
+let lastTrackedPath = null;
+let lastTrackedTime = 0;
+
 /**
  * Registra una vista de página en todos los proveedores activos
  */
 export function trackPageView(url) {
   if (typeof window === 'undefined') return;
 
-  const cfg = getAnalyticsConfig();
   const path = url || window.location.pathname;
+  const now = Date.now();
+
+  // Prevenir duplicados inmediatos por re-renderizados o Fast Refresh en el mismo segundo
+  if (lastTrackedPath === path && now - lastTrackedTime < 2000) {
+    return;
+  }
+  lastTrackedPath = path;
+  lastTrackedTime = now;
+
+  const cfg = getAnalyticsConfig();
 
   // 1. Google Analytics 4
   if (cfg.gaEnabled && cfg.gaId && window.gtag) {

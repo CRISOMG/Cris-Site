@@ -3,12 +3,20 @@ import path from 'path';
 import crypto from 'crypto';
 import { getServiceSupabase } from '../../../lib/supabaseClient';
 
-const STORE_PATH = path.join(process.cwd(), 'src', 'data', 'analytics_store.json');
+// Usar directorio .data/ fuera de src/ para evitar ciclos de Fast Refresh en Next.js
+const STORE_DIR = path.join(process.cwd(), '.data');
+const STORE_PATH = path.join(STORE_DIR, 'analytics_store.json');
+const LEGACY_PATH = path.join(process.cwd(), 'src', 'data', 'analytics_store.json');
 
 function getStore() {
   try {
     if (fs.existsSync(STORE_PATH)) {
       return JSON.parse(fs.readFileSync(STORE_PATH, 'utf8'));
+    }
+    if (fs.existsSync(LEGACY_PATH)) {
+      const data = JSON.parse(fs.readFileSync(LEGACY_PATH, 'utf8'));
+      saveStore(data);
+      return data;
     }
   } catch (_) {}
   return {
@@ -23,8 +31,9 @@ function getStore() {
 
 function saveStore(data) {
   try {
-    const dir = path.dirname(STORE_PATH);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(STORE_DIR)) {
+      fs.mkdirSync(STORE_DIR, { recursive: true });
+    }
     fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf8');
   } catch (err) {
     console.error('Error guardando analytics:', err.message);
