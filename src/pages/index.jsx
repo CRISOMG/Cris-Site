@@ -5,6 +5,8 @@ import SocialIcons from '../containers/SocialIcons';
 import AuthConfirmModal from '../components/AuthConfirmModal';
 import { useAuth } from '../context/AuthContext';
 import metadata from '../data/metadata.json';
+import socialConfig from '../data/social.json';
+import { getGradientTheme } from '../data/gradients';
 import { trackEvent } from '../lib/analytics';
 
 export default function Home() {
@@ -51,8 +53,22 @@ export default function Home() {
     }
   }, [secretClicks]);
 
+  const activeGradientId = socialConfig.flags?.heroGradient || 'default';
+  const theme = getGradientTheme(activeGradientId);
+
   return (
-    <div className='bg-page bg-gradient-to-b from-yellow-400 to-orange-500 min-h-screen relative overflow-hidden'>
+    <div
+      className={`bg-page min-h-screen relative overflow-hidden transition-all duration-700 ${theme.wrapperClass}`}
+      style={theme.style || {}}
+    >
+      {/* Orbes atmosféricos para temas Mesh Aurora */}
+      {theme.hasMeshOrbs && (
+        <>
+          <div className='absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#F9D423]/30 blur-3xl pointer-events-none animate-pulse' />
+          <div className='absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#E65C00]/25 blur-3xl pointer-events-none' />
+          <div className='absolute -bottom-32 left-1/4 w-96 h-96 rounded-full bg-[#FFAA5B]/20 blur-3xl pointer-events-none' />
+        </>
+      )}
       <Head>
         <title>{metadata.pageTitle || 'Cris Page'}</title>
         <link rel='icon' href='/favicon.ico' />
@@ -150,8 +166,16 @@ export default function Home() {
         ._font-arial {
           font-family: Arial, Helvetica, sans-serif;
         }
-        ._font-nova-round {
-          font-family: var(--nova-round);
+        @keyframes gradientFlow {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
         }
       `}</style>
     </div>

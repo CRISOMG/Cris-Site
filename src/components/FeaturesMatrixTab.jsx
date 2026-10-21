@@ -8,12 +8,14 @@ import {
   FigmaIcon,
   WhatsappIcon,
 } from './svg-icons';
+import { GRADIENT_THEMES } from '../data/gradients';
 
 export default function FeaturesMatrixTab() {
   const { token } = useAuth();
 
   const [config, setConfig] = useState({
     flags: {
+      heroGradient: 'default',
       vipAvailability: true,
       showMetrics: true,
       extendedBrandTools: true,
@@ -146,6 +148,16 @@ export default function FeaturesMatrixTab() {
     }));
   };
 
+  const setHeroGradient = (themeId) => {
+    setConfig((prev) => ({
+      ...prev,
+      flags: {
+        ...prev.flags,
+        heroGradient: themeId,
+      },
+    }));
+  };
+
   const toggleAnalyticsFlag = (providerKey) => {
     setConfig((prev) => ({
       ...prev,
@@ -253,6 +265,9 @@ export default function FeaturesMatrixTab() {
   }
 
   const activeLinksCount = Object.values(config.links).filter((l) => l.enabled).length;
+  const selectedTheme =
+    GRADIENT_THEMES.find((t) => t.id === (config.flags?.heroGradient || 'default')) ||
+    GRADIENT_THEMES[0];
 
   return (
     <div className='space-y-6'>
@@ -307,14 +322,22 @@ export default function FeaturesMatrixTab() {
             <span className='text-sm'>👁️</span>
             <h3 className='text-sm font-bold text-[#F7EFC5]'>Previsualización en Vivo de la Barra Social en el Home</h3>
           </div>
-          <span className='text-xs font-medium text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
-            {activeLinksCount} enlaces activos
-          </span>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs font-medium text-white/60 bg-white/5 px-2.5 py-1 rounded-full border border-white/10'>
+              Fondo: <strong className='text-[#FFAA5B]'>{selectedTheme.name}</strong>
+            </span>
+            <span className='text-xs font-medium text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
+              {activeLinksCount} enlaces activos
+            </span>
+          </div>
         </div>
 
-        {/* Mockup de la franja amarilla/naranja del Home */}
-        <div className='rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 p-6 flex flex-col items-center justify-center shadow-inner'>
-          <span className='text-[10px] uppercase font-bold text-black/60 tracking-wider mb-2 font-mono'>
+        {/* Mockup adaptativo con el gradiente seleccionado */}
+        <div
+          className='rounded-2xl p-6 flex flex-col items-center justify-center shadow-inner transition-all duration-500 relative overflow-hidden'
+          style={{ background: selectedTheme.previewGradient }}
+        >
+          <span className={`text-[10px] uppercase font-bold tracking-wider mb-2 font-mono ${selectedTheme.isDark ? 'text-white/70' : 'text-black/60'}`}>
             Vista del visitante en el Home
           </span>
           <div className='flex justify-around items-center w-full max-w-sm h-20 bg-black/5 rounded-2xl px-4 border border-black/10 backdrop-blur-sm'>
@@ -330,6 +353,105 @@ export default function FeaturesMatrixTab() {
           {activeLinksCount === 0 && (
             <p className='text-xs text-black/70 italic mt-2'>No hay enlaces habilitados en el link tree.</p>
           )}
+        </div>
+      </div>
+
+      {/* SELECTOR DE PLANTILLAS DE GRADIENTES DEL HERO */}
+      <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl space-y-5'>
+        <div className='border-b border-white/10 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2'>
+          <div>
+            <div className='flex items-center gap-2'>
+              <span className='text-lg'>🎨</span>
+              <h3 className='text-base font-bold text-[#F7EFC5]'>
+                Plantillas & Estilos de Gradiente para el Fondo del Hero
+              </h3>
+            </div>
+            <p className='text-xs text-white/60'>
+              Elige entre el gradiente original cálido o nuevas variaciones modernas como <strong>Blooker20</strong> (Trinidad Orange + Candlelight Yellow), radiales o mesh orgánico sin alterar la configuración actual a menos que lo desees.
+            </p>
+          </div>
+          <span className='text-xs font-mono px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 self-start sm:self-auto'>
+            Activo: <strong className='text-[#FFAA5B]'>{selectedTheme.name}</strong>
+          </span>
+        </div>
+
+        {/* Grid de opciones de gradiente */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {GRADIENT_THEMES.map((theme) => {
+            const isSelected = (config.flags?.heroGradient || 'default') === theme.id;
+
+            return (
+              <div
+                key={theme.id}
+                onClick={() => setHeroGradient(theme.id)}
+                className={`rounded-2xl border p-4.5 cursor-pointer transition-all flex flex-col justify-between space-y-3 relative overflow-hidden ${
+                  isSelected
+                    ? 'bg-white/10 border-[#FFAA5B] shadow-lg shadow-[#FFAA5B]/15 ring-2 ring-[#FFAA5B]/40'
+                    : 'bg-white/5 border-white/10 hover:border-white/25 hover:bg-white/[0.07]'
+                }`}
+              >
+                {/* Muestra visual del gradiente */}
+                <div
+                  className='h-24 w-full rounded-xl shadow-inner relative flex items-center justify-center p-3 border border-white/10 overflow-hidden'
+                  style={{ background: theme.previewGradient }}
+                >
+                  <span
+                    className={`text-[11px] font-bold font-mono px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${
+                      theme.isDark ? 'bg-black/60 text-[#F7EFC5]' : 'bg-white/70 text-black'
+                    }`}
+                  >
+                    Cristian Caraballo
+                  </span>
+                </div>
+
+                <div className='space-y-1.5'>
+                  <div className='flex items-center justify-between gap-2'>
+                    <h4 className='text-xs font-bold text-white'>{theme.name}</h4>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                        isSelected
+                          ? 'bg-[#FFAA5B] text-[#0D222D]'
+                          : 'bg-white/10 text-white/60'
+                      }`}
+                    >
+                      {isSelected ? '✓ Activo' : theme.badge}
+                    </span>
+                  </div>
+                  <p className='text-[11px] text-white/50 leading-relaxed'>{theme.description}</p>
+                </div>
+
+                {/* Paleta de colores */}
+                <div className='flex items-center justify-between pt-2 border-t border-white/5'>
+                  <div className='flex items-center gap-1.5'>
+                    {theme.colors.map((c, i) => (
+                      <span
+                        key={i}
+                        className='w-4 h-4 rounded-full border border-black/30 shadow-sm'
+                        style={{ backgroundColor: c }}
+                        title={c}
+                      />
+                    ))}
+                    <span className='text-[10px] font-mono text-white/40 ml-1'>{theme.category}</span>
+                  </div>
+
+                  <button
+                    type='button'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setHeroGradient(theme.id);
+                    }}
+                    className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-colors ${
+                      isSelected
+                        ? 'bg-[#6DB758] text-white'
+                        : 'bg-white/10 hover:bg-white/20 text-white/80'
+                    }`}
+                  >
+                    {isSelected ? 'Seleccionado' : 'Elegir'}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
