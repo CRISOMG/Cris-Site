@@ -12,6 +12,7 @@
     "check-updates": "npx npm-check-updates -i"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.2",
     "autoprefixer": "^10.6.1",
