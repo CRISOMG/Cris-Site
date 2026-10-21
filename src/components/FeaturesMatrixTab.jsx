@@ -9,6 +9,7 @@ import {
   WhatsappIcon,
 } from './svg-icons';
 import { GRADIENT_THEMES } from '../data/gradients';
+import LavaLampBackground from './LavaLampBackground';
 
 export default function FeaturesMatrixTab() {
   const { token } = useAuth();
@@ -334,13 +335,18 @@ export default function FeaturesMatrixTab() {
 
         {/* Mockup adaptativo con el gradiente seleccionado */}
         <div
-          className='rounded-2xl p-6 flex flex-col items-center justify-center shadow-inner transition-all duration-500 relative overflow-hidden'
+          className='rounded-2xl p-6 flex flex-col items-center justify-center shadow-inner transition-all duration-500 relative overflow-hidden min-h-[170px]'
           style={{ background: selectedTheme.previewGradient }}
         >
-          <span className={`text-[10px] uppercase font-bold tracking-wider mb-2 font-mono ${selectedTheme.isDark ? 'text-white/70' : 'text-black/60'}`}>
+          {/* Lámpara de lava en miniatura dentro del preview si el tema la incluye */}
+          {selectedTheme.hasLavaLamp && (
+            <LavaLampBackground isMini={true} isDark={selectedTheme.isDark} />
+          )}
+
+          <span className={`text-[10px] uppercase font-bold tracking-wider mb-2 font-mono relative z-10 ${selectedTheme.isDark ? 'text-white/80' : 'text-black/60'}`}>
             Vista del visitante en el Home
           </span>
-          <div className='flex justify-around items-center w-full max-w-sm h-20 bg-black/5 rounded-2xl px-4 border border-black/10 backdrop-blur-sm'>
+          <div className='flex justify-around items-center w-full max-w-sm h-20 bg-black/5 rounded-2xl px-4 border border-black/10 backdrop-blur-sm relative z-10'>
             {Object.entries(config.links).map(([key, item]) => {
               if (!item.enabled) return null;
               return (
@@ -351,7 +357,7 @@ export default function FeaturesMatrixTab() {
             })}
           </div>
           {activeLinksCount === 0 && (
-            <p className='text-xs text-black/70 italic mt-2'>No hay enlaces habilitados en el link tree.</p>
+            <p className='text-xs text-black/70 italic mt-2 relative z-10'>No hay enlaces habilitados en el link tree.</p>
           )}
         </div>
       </div>
@@ -367,7 +373,7 @@ export default function FeaturesMatrixTab() {
               </h3>
             </div>
             <p className='text-xs text-white/60'>
-              Elige entre el gradiente original cálido o nuevas variaciones modernas como <strong>Blooker20</strong> (Trinidad Orange + Candlelight Yellow), radiales o mesh orgánico sin alterar la configuración actual a menos que lo desees.
+              Elige entre el gradiente original cálido o nuevas variaciones modernas como <strong>Blooker20</strong> (Trinidad Orange + Candlelight Yellow), radiales o efecto lámpara de lava.
             </p>
           </div>
           <span className='text-xs font-mono px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 self-start sm:self-auto'>
@@ -395,8 +401,11 @@ export default function FeaturesMatrixTab() {
                   className='h-24 w-full rounded-xl shadow-inner relative flex items-center justify-center p-3 border border-white/10 overflow-hidden'
                   style={{ background: theme.previewGradient }}
                 >
+                  {theme.hasLavaLamp && (
+                    <LavaLampBackground isMini={true} isDark={theme.isDark} />
+                  )}
                   <span
-                    className={`text-[11px] font-bold font-mono px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${
+                    className={`text-[11px] font-bold font-mono px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md relative z-10 ${
                       theme.isDark ? 'bg-black/60 text-[#F7EFC5]' : 'bg-white/70 text-black'
                     }`}
                   >

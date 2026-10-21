@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import metadata from '../data/metadata.json';
 import socialConfig from '../data/social.json';
 import { getGradientTheme } from '../data/gradients';
+import LavaLampBackground from '../components/LavaLampBackground';
 import { trackEvent } from '../lib/analytics';
 
 export default function Home() {
@@ -61,8 +62,11 @@ export default function Home() {
       className={`bg-page min-h-screen relative overflow-hidden transition-all duration-700 ${theme.wrapperClass}`}
       style={theme.style || {}}
     >
-      {/* Orbes atmosféricos para temas Mesh Aurora */}
-      {theme.hasMeshOrbs && (
+      {/* Efecto Lámpara de Lava (Burbujas ascendentes y descendentes de Blooker20) */}
+      {theme.hasLavaLamp && <LavaLampBackground isDark={theme.isDark} />}
+
+      {/* Orbes atmosféricos para temas Mesh Aurora sin lava lamp */}
+      {theme.hasMeshOrbs && !theme.hasLavaLamp && (
         <>
           <div className='absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#F9D423]/30 blur-3xl pointer-events-none animate-pulse' />
           <div className='absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-[#E65C00]/25 blur-3xl pointer-events-none' />
@@ -91,7 +95,7 @@ export default function Home() {
         <meta key='twitter:image' property='twitter:image' content={metadata.twitter?.image || 'https://cris-page.vercel.app/assets/meta-image.jpg'} />
       </Head>
 
-      <main className='flex flex-col justify-center items-center text-center p-4 min-h-screen'>
+      <main className='flex flex-col justify-center items-center text-center p-4 min-h-screen relative z-10'>
         <div>
           <h2 className='_font-grand-hotel text-5xl'>Cristian Caraballo</h2>
         </div>

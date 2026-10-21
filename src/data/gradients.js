@@ -76,19 +76,19 @@ export const GRADIENT_THEMES = [
   },
   {
     id: 'dark-blooker-amber',
-    name: 'Nocturno Obsidian & Halo Blooker20',
-    badge: 'Dark Mode VIP',
-    category: 'Oscuro Elegante',
-    description: 'Fondo oscuro profundo (#07151C) con halos de luz ámbar y Blooker20 flotando en el fondo. Ideal para amantes del modo oscuro.',
-    colors: ['#07151C', '#0D222D', '#FFAA5B', '#E65C00'],
+    name: 'Nocturno Obsidian & Lava Blooker20',
+    badge: 'Lámpara de Lava',
+    category: 'Oscuro Orgánico',
+    description: 'Fondo obsidian profundo con efecto de lámpara de lava: orbes fluidos de Trinidad Orange y Candlelight Yellow que suben, bajan y se fusionan orgánicamente.',
+    colors: ['#07151C', '#E65C00', '#F9D423', '#FFAA5B'],
     isDark: true,
-    hasMeshOrbs: true,
-    cssValue: 'linear-gradient(180deg, #07151C 0%, #0D222D 100%)',
+    hasLavaLamp: true,
+    cssValue: 'radial-gradient(ellipse at 50% 25%, #152732 0%, #0d1e27 40%, #07151C 75%, #030a0e 100%)',
     style: {
-      background: 'linear-gradient(180deg, #07151C 0%, #0D222D 100%)',
+      background: 'radial-gradient(ellipse at 50% 25%, #152732 0%, #0d1e27 40%, #07151C 75%, #030a0e 100%)',
     },
     wrapperClass: 'text-[#F7EFC5] relative',
-    previewGradient: 'radial-gradient(circle at 50% 30%, rgba(255,170,91,0.4), #07151C 70%)',
+    previewGradient: 'radial-gradient(ellipse at 50% 25%, #152732 0%, #0d1e27 40%, #07151C 75%, #030a0e 100%)',
   },
 ];
 

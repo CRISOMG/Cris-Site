@@ -31,6 +31,10 @@ function saveStore(data) {
 }
 
 export default function handler(req, res) {
+  if (!res || typeof res.status !== 'function') {
+    return null;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Método no permitido' });
   }

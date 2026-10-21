@@ -1,32 +1,377 @@
 {
   "summary": {
-    "totalVisits": 6,
+    "totalVisits": 43,
     "uniqueVisitorsCount": 1,
-    "totalEvents": 0,
+    "totalEvents": 4,
     "whatsappClicks": 0,
-    "socialClicks": 0
+    "socialClicks": 3
   },
   "daily": {
     "2026-10-21": {
-      "visits": 6,
+      "visits": 43,
       "uniques": [
         "20f4e12f9b6a"
       ],
-      "events": {}
+      "events": {
+        "secret_trigger_click": 3,
+        "secret_modal_unlocked": 1
+      }
     }
   },
   "pages": {
-    "/private": 3,
+    "/private": 23,
     "/es/inicio": 1,
     "/es/private": 1,
-    "/admin": 1
+    "/admin": 1,
+    "/": 14,
+    "/auth": 1,
+    "/brand": 2
   },
-  "events": {},
+  "events": {
+    "secret_trigger_click": 3,
+    "secret_modal_unlocked": 1
+  },
   "devices": {
-    "desktop": 6,
+    "desktop": 43,
     "mobile": 0
   },
   "recentLog": [
+    {
+      "id": "efp9bl3",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616263972
+    },
+    {
+      "id": "uvzt737",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616263971
+    },
+    {
+      "id": "ypdgcs4",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616263900
+    },
+    {
+      "id": "zmd479e",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616263920
+    },
+    {
+      "id": "yikktyo",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616255952
+    },
+    {
+      "id": "b3mavd0",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616255892
+    },
+    {
+      "id": "43bi4wg",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616255839
+    },
+    {
+      "id": "zpbmrtf",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616255838
+    },
+    {
+      "id": "68kv9ye",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616248144
+    },
+    {
+      "id": "lvvyrki",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616248175
+    },
+    {
+      "id": "ygtxpcg",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616232357
+    },
+    {
+      "id": "r0ewf1p",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616232321
+    },
+    {
+      "id": "k42e9e7",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616232221
+    },
+    {
+      "id": "dfrorq2",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616232239
+    },
+    {
+      "id": "dvwr94f",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792616180940
+    },
+    {
+      "id": "rrkz19o",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616171872
+    },
+    {
+      "id": "vnew5k3",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616171820
+    },
+    {
+      "id": "bs0s17a",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616096732
+    },
+    {
+      "id": "5hdg6te",
+      "type": "pageview",
+      "path": "/brand",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792616093275
+    },
+    {
+      "id": "52iu78g",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "http://localhost:3000/private",
+      "timestamp": 1792615783072
+    },
+    {
+      "id": "8ggour4",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615782507
+    },
+    {
+      "id": "y54qivq",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615776285
+    },
+    {
+      "id": "qw10mbl",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615730698
+    },
+    {
+      "id": "jvitdqs",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615724400
+    },
+    {
+      "id": "2mtk2bu",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615719605
+    },
+    {
+      "id": "yqzq0q1",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615715006
+    },
+    {
+      "id": "o11ej7e",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615709816
+    },
+    {
+      "id": "c5m12hm",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615693125
+    },
+    {
+      "id": "avcg81o",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615691047
+    },
+    {
+      "id": "16dhra5",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615669994
+    },
+    {
+      "id": "eddbhxp",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615663758
+    },
+    {
+      "id": "376yrsr",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615524870
+    },
+    {
+      "id": "8x9jjgo",
+      "type": "pageview",
+      "path": "/brand",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615520339
+    },
+    {
+      "id": "js5ffts",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615496134
+    },
+    {
+      "id": "oo8zlpv",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615495429
+    },
+    {
+      "id": "7fftjkd",
+      "type": "pageview",
+      "path": "/auth",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615487465
+    },
+    {
+      "id": "4fhob3i",
+      "type": "event",
+      "action": "secret_modal_unlocked",
+      "label": "",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615483745
+    },
+    {
+      "id": "2crsgjp",
+      "type": "event",
+      "action": "secret_trigger_click",
+      "label": "",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615483741
+    },
+    {
+      "id": "xpu223u",
+      "type": "event",
+      "action": "secret_trigger_click",
+      "label": "",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615483557
+    },
+    {
+      "id": "9rwmvfb",
+      "type": "event",
+      "action": "secret_trigger_click",
+      "label": "",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615483382
+    },
+    {
+      "id": "e4zdynj",
+      "type": "pageview",
+      "path": "/",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792615482160
+    },
     {
       "id": "43ttjrk",
       "type": "pageview",

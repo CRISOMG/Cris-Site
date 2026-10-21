@@ -12,6 +12,7 @@ import { trackEvent } from '../lib/analytics';
 
 export default function SocialIcons() {
   const { links } = socialConfig;
+  const isDark = socialConfig.flags?.heroGradient === 'dark-blooker-amber';
 
   // Mapa de componentes SVG según la clave
   const iconMap = {
@@ -33,7 +34,13 @@ export default function SocialIcons() {
   };
 
   return (
-    <div className='flex justify-around items-center mx-auto w-full max-w-sm h-32 px-2'>
+    <div
+      className={`flex justify-around items-center mx-auto w-full max-w-sm px-4 transition-all duration-300 ${
+        isDark
+          ? 'h-24 bg-white/15 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl shadow-black/50'
+          : 'h-32'
+      }`}
+    >
       {Object.entries(links).map(([key, item]) => {
         if (!item?.enabled) return null;
         const iconComponent = iconMap[key];
