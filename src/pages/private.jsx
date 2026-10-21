@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
+import MetaEditorTab from '../components/MetaEditorTab';
 
 export default function PrivatePage() {
   const router = useRouter();
@@ -173,12 +174,24 @@ export default function PrivatePage() {
             <span>📝</span>
             <span>Bloc de Notas Privado</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('meta')}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+              activeTab === 'meta'
+                ? 'bg-[#FFAA5B] text-[#0D222D] shadow-md shadow-[#FFAA5B]/20'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>🏷️</span>
+            <span>Meta Tags & SEO</span>
+          </button>
         </div>
 
         {/* Pestaña 1: Bóveda de Recursos */}
         {activeTab === 'vault' && (
           <div className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
               {/* Card 1: Manual de Marca & Identidad (Privado) */}
               <div className='bg-[#0D222D] border border-[#FFAA5B]/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
                 <div>
@@ -302,6 +315,30 @@ export default function PrivatePage() {
                     <span className='text-white/90'>24 horas</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Card 5: Meta Tags & SEO Live Hub */}
+              <div className='bg-[#0D222D] border border-[#6DB758]/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>🏷️</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-[#6DB758] bg-[#6DB758]/10 px-2.5 py-1 rounded-full border border-[#6DB758]/20'>
+                      SEO & Git
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Meta Tags & Social Cards</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Edita títulos, descripciones y portadas para Google, X y WhatsApp. Con guardado en File System y sincronización con GitHub.
+                  </p>
+                </div>
+                <button
+                  type='button'
+                  onClick={() => setActiveTab('meta')}
+                  className='flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#6DB758] to-[#5BA546] text-xs font-bold text-white shadow-md transition-transform hover:scale-[1.02]'
+                >
+                  <span>Abrir Editor de Metas</span>
+                  <span>&rarr;</span>
+                </button>
               </div>
             </div>
           </div>
@@ -443,6 +480,9 @@ export default function PrivatePage() {
             </div>
           </div>
         )}
+
+        {/* Pestaña 4: Editor de Meta Tags & SEO */}
+        {activeTab === 'meta' && <MetaEditorTab />}
       </main>
     </div>
   );

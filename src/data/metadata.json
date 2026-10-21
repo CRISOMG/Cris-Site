@@ -1,0 +1,23 @@
+{
+  "pageTitle": "Cris Page - Cristian Caraballo",
+  "metaTitle": "Cristian Caraballo - Javascript Product Engineer",
+  "description": "Javascript Product Engineer. Relentless intellectual curiosity & Lifelong Learner at Platzi. Desarrollador web especializado en JavaScript moderno, React, Next.js y aplicaciones de alto impacto.",
+  "canonicalUrl": "https://www.crisomg.link/",
+  "author": "Cristian Caraballo",
+  "keywords": "Cristian Caraballo, Javascript Product Engineer, React, Next.js, Frontend Developer, Platzi, Portfolio, Web Developer",
+  "og": {
+    "type": "website",
+    "url": "https://cris-page.vercel.app/",
+    "title": "Cristian Caraballo - Javascript Product Engineer",
+    "description": "Javascript Product Engineer. Relentless intellectual curiosity & Lifelong Learner at Platzi. Desarrollador web especializado en JavaScript moderno, React, Next.js y aplicaciones de alto impacto.",
+    "image": "https://cris-page.vercel.app/assets/meta-image.png",
+    "imageAlt": "Cristian Caraballo - Javascript Product Engineer"
+  },
+  "twitter": {
+    "card": "summary_large_image",
+    "url": "https://cris-page.vercel.app/",
+    "title": "Cristian Caraballo - Javascript Product Engineer",
+    "description": "Javascript Product Engineer. Relentless intellectual curiosity & Lifelong Learner at Platzi. Desarrollador web especializado en JavaScript moderno, React, Next.js y aplicaciones de alto impacto.",
+    "image": "https://cris-page.vercel.app/assets/meta-image.jpg"
+  }
+}

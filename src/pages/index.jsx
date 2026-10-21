@@ -4,6 +4,7 @@ import Link from 'next/link';
 import SocialIcons from '../containers/SocialIcons';
 import AuthConfirmModal from '../components/AuthConfirmModal';
 import { useAuth } from '../context/AuthContext';
+import metadata from '../data/metadata.json';
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -49,46 +50,25 @@ export default function Home() {
   return (
     <div className='bg-page bg-gradient-to-b from-yellow-400 to-orange-500 min-h-screen relative overflow-hidden'>
       <Head>
-        <title>Cris Page</title>
+        <title>{metadata.pageTitle || 'Cris Page'}</title>
         <link rel='icon' href='/favicon.ico' />
-        <meta key='title' name='title' content='Cristian Caraballo - Frontend Developer with React.js | Next.js ' />
-        <meta
-          key='description'
-          name='description'
-          content='Desarrollador de Aplicaciones FullStack MERN | Next.js | Nest.js. Tecnologías/Metodologías: MERN & JAM Stack. visita mi pagina para saber más...'
-        />
+        <meta key='title' name='title' content={metadata.metaTitle || 'Cristian Caraballo'} />
+        <meta key='description' name='description' content={metadata.description || ''} />
+        {metadata.author && <meta name='author' content={metadata.author} />}
+        {metadata.keywords && <meta name='keywords' content={metadata.keywords} />}
 
-        <meta key='og:type' property='og:type' content='website' />
-        <meta key='og:url' property='og:url' content='https://cris-page.vercel.app/' />
-        <meta
-          key='og:title'
-          property='og:title'
-          content='Cristian Caraballo - FullStack MERN | Next.js | Nest.js '
-        />
-        <meta
-          key='og:description'
-          property='og:description'
-          content='Desarrollador de Aplicaciones FullStack MERN | Next.js | Nest.js. Tecnologías/Metodologías: MERN & JAM Stack. visita mi pagina para saber más...'
-        />
-        <meta key='og:image' property='og:image' content='https://cris-page.vercel.app/assets/meta-image.png' />
+        <meta key='og:type' property='og:type' content={metadata.og?.type || 'website'} />
+        <meta key='og:url' property='og:url' content={metadata.og?.url || metadata.canonicalUrl} />
+        <meta key='og:title' property='og:title' content={metadata.og?.title || metadata.metaTitle} />
+        <meta key='og:description' property='og:description' content={metadata.og?.description || metadata.description} />
+        <meta key='og:image' property='og:image' content={metadata.og?.image || 'https://cris-page.vercel.app/assets/meta-image.png'} />
+        {metadata.og?.imageAlt && <meta property='og:image:alt' content={metadata.og.imageAlt} />}
 
-        <meta key='twitter:card' property='twitter:card' content='summary_large_image' />
-        <meta key='twitter:url' property='twitter:url' content='https://cris-page.vercel.app/' />
-        <meta
-          key='twitter:title'
-          property='twitter:title'
-          content='Cristian Caraballo - FullStack MERN | Next.js | Nest.js '
-        />
-        <meta
-          key='twitter:description'
-          property='twitter:description'
-          content='Desarrollador de Aplicaciones FullStack MERN | Next.js | Nest.js. Tecnologías/Metodologías: MERN & JAM Stack. visita mi pagina para saber más...'
-        />
-        <meta
-          key='twitter:image'
-          property='twitter:image'
-          content='https://cris-page.vercel.app/assets/meta-image.jpg'
-        />
+        <meta key='twitter:card' property='twitter:card' content={metadata.twitter?.card || 'summary_large_image'} />
+        <meta key='twitter:url' property='twitter:url' content={metadata.twitter?.url || metadata.canonicalUrl} />
+        <meta key='twitter:title' property='twitter:title' content={metadata.twitter?.title || metadata.metaTitle} />
+        <meta key='twitter:description' property='twitter:description' content={metadata.twitter?.description || metadata.description} />
+        <meta key='twitter:image' property='twitter:image' content={metadata.twitter?.image || 'https://cris-page.vercel.app/assets/meta-image.jpg'} />
       </Head>
 
       <main className='flex flex-col justify-center items-center text-center p-4 min-h-screen'>
