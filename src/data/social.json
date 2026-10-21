@@ -2,7 +2,19 @@
   "flags": {
     "vipAvailability": true,
     "showMetrics": true,
-    "extendedBrandTools": true
+    "extendedBrandTools": true,
+    "analytics": {
+      "googleAnalytics": {
+        "enabled": true,
+        "measurementId": "G-H1PTK51HKX"
+      },
+      "vercelAnalytics": {
+        "enabled": true
+      },
+      "internalAnalytics": {
+        "enabled": true
+      }
+    }
   },
   "links": {
     "whatsapp": {

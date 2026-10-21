@@ -2,6 +2,16 @@ import crypto from 'crypto';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'cris-site-secret-token-key-2026';
 
+export function generateSessionToken(payload) {
+  const data = JSON.stringify(payload);
+  const base64Data = Buffer.from(data).toString('base64');
+  const signature = crypto
+    .createHmac('sha256', SESSION_SECRET)
+    .update(base64Data)
+    .digest('hex');
+  return `${base64Data}.${signature}`;
+}
+
 export function verifySessionToken(token) {
   if (!token || typeof token !== 'string') return null;
   const parts = token.split('.');

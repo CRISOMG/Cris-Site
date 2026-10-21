@@ -1,0 +1,79 @@
+{
+  "summary": {
+    "totalVisits": 6,
+    "uniqueVisitorsCount": 1,
+    "totalEvents": 0,
+    "whatsappClicks": 0,
+    "socialClicks": 0
+  },
+  "daily": {
+    "2026-10-21": {
+      "visits": 6,
+      "uniques": [
+        "20f4e12f9b6a"
+      ],
+      "events": {}
+    }
+  },
+  "pages": {
+    "/private": 3,
+    "/es/inicio": 1,
+    "/es/private": 1,
+    "/admin": 1
+  },
+  "events": {},
+  "devices": {
+    "desktop": 6,
+    "mobile": 0
+  },
+  "recentLog": [
+    {
+      "id": "43ttjrk",
+      "type": "pageview",
+      "path": "/admin",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612564145
+    },
+    {
+      "id": "c5hkdaa",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612558561
+    },
+    {
+      "id": "3jvarxx",
+      "type": "pageview",
+      "path": "/es/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612542777
+    },
+    {
+      "id": "5n6n6r2",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612532357
+    },
+    {
+      "id": "e96uhoy",
+      "type": "pageview",
+      "path": "/es/inicio",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612526959
+    },
+    {
+      "id": "mtew484",
+      "type": "pageview",
+      "path": "/private",
+      "device": "desktop",
+      "referrer": "direct",
+      "timestamp": 1792612519396
+    }
+  ]
+}

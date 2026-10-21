@@ -8,6 +8,7 @@ import {
   WhatsappIcon,
 } from '../components/svg-icons';
 import socialConfig from '../data/social.json';
+import { trackEvent } from '../lib/analytics';
 
 export default function SocialIcons() {
   const { links } = socialConfig;
@@ -20,6 +21,15 @@ export default function SocialIcons() {
     platzi: <PlatziIcon />,
     twitter: <TwitterIcon />,
     figma: <FigmaIcon />,
+  };
+
+  const handleLinkClick = (key, item) => {
+    trackEvent({
+      action: `${key}_click`,
+      category: 'social_link',
+      label: `${item.name}: ${item.url}`,
+      metadata: { network: key, destination: item.url },
+    });
   };
 
   return (
@@ -36,6 +46,7 @@ export default function SocialIcons() {
             target='_blank'
             rel='noopener noreferrer'
             title={item.name}
+            onClick={() => handleLinkClick(key, item)}
             className='transition-all duration-200 hover:scale-115 active:scale-95 flex items-center justify-center'
           >
             {iconComponent}

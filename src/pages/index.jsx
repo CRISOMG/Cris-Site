@@ -5,6 +5,7 @@ import SocialIcons from '../containers/SocialIcons';
 import AuthConfirmModal from '../components/AuthConfirmModal';
 import { useAuth } from '../context/AuthContext';
 import metadata from '../data/metadata.json';
+import { trackEvent } from '../lib/analytics';
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -19,6 +20,7 @@ export default function Home() {
 
       if (isCmdOrCtrlK || isCtrlShiftA) {
         e.preventDefault();
+        trackEvent({ action: 'stealth_shortcut_used', category: 'admin_auth' });
         setIsModalOpen(true);
       }
     };
@@ -29,9 +31,11 @@ export default function Home() {
 
   // Manejar toques y clicks múltiples sobre el lema de Platzi de forma sigilosa
   const handleSecretTrigger = () => {
+    trackEvent({ action: 'secret_trigger_click', category: 'easter_egg' });
     setSecretClicks((prev) => {
       const next = prev + 1;
       if (next >= 3) {
+        trackEvent({ action: 'secret_modal_unlocked', category: 'admin_auth' });
         setIsModalOpen(true);
         return 0;
       }

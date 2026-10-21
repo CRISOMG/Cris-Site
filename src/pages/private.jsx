@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 import MetaEditorTab from '../components/MetaEditorTab';
 import FeaturesMatrixTab from '../components/FeaturesMatrixTab';
+import AnalyticsDashboardTab from '../components/AnalyticsDashboardTab';
 
 export default function PrivatePage() {
   const router = useRouter();
@@ -146,6 +147,18 @@ export default function PrivatePage() {
           >
             <span>⚡</span>
             <span>Matriz de Features & Link Tree</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+              activeTab === 'analytics'
+                ? 'bg-[#FFAA5B] text-[#0D222D] shadow-md shadow-[#FFAA5B]/20'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <span>📊</span>
+            <span>Analíticas & Métricas</span>
           </button>
 
           <button
@@ -325,6 +338,30 @@ export default function PrivatePage() {
                   <span>&rarr;</span>
                 </button>
               </div>
+
+              {/* Card 6: Analíticas en Tiempo Real */}
+              <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between'>
+                <div>
+                  <div className='flex items-center justify-between mb-4'>
+                    <span className='text-2xl'>📊</span>
+                    <span className='text-[10px] font-bold uppercase tracking-wider text-[#FFAA5B] bg-[#FFAA5B]/10 px-2.5 py-1 rounded-full border border-[#FFAA5B]/20'>
+                      Métricas
+                    </span>
+                  </div>
+                  <h3 className='text-lg font-bold text-[#F7EFC5] mb-2'>Analíticas & Tráfico</h3>
+                  <p className='text-xs text-white/70 mb-5 leading-relaxed'>
+                    Monitoriza visitantes únicos, páginas vistas y clics de contacto a WhatsApp y redes sociales en tiempo real.
+                  </p>
+                </div>
+                <button
+                  type='button'
+                  onClick={() => setActiveTab('analytics')}
+                  className='flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-[#FFAA5B] to-[#FBBF24] text-xs font-bold text-[#0D222D] shadow-md transition-transform hover:scale-[1.02]'
+                >
+                  <span>Ver Panel de Analíticas</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -332,7 +369,12 @@ export default function PrivatePage() {
         {/* Pestaña 2: Matriz de Features & Link Tree */}
         {activeTab === 'features' && <FeaturesMatrixTab />}
 
-        {/* Pestaña 3: Bloc de Notas Privado */}
+        {/* Pestaña 3: Analíticas & Métricas */}
+        {activeTab === 'analytics' && (
+          <AnalyticsDashboardTab onSwitchToFeatures={() => setActiveTab('features')} />
+        )}
+
+        {/* Pestaña 4: Bloc de Notas Privado */}
         {activeTab === 'notes' && (
           <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-xl space-y-4'>
             <div className='flex items-center justify-between'>
@@ -369,7 +411,7 @@ export default function PrivatePage() {
           </div>
         )}
 
-        {/* Pestaña 4: Editor de Meta Tags & SEO */}
+        {/* Pestaña 5: Editor de Meta Tags & SEO */}
         {activeTab === 'meta' && <MetaEditorTab />}
       </main>
     </div>

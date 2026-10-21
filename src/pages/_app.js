@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useRouter } from 'next/router';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { getAnalyticsConfig, trackPageView } from '../lib/analytics';
 import '../styles/globals.css';
 
 function FloatingAuthBadge() {
@@ -49,8 +52,53 @@ function FloatingAuthBadge() {
 }
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+  const [cfg, setCfg] = useState(() => getAnalyticsConfig());
+
+  useEffect(() => {
+    // Registrar la visita inicial
+    trackPageView(window.location.pathname);
+
+    // Registrar cambios de ruta en SPA
+    const handleRouteChange = (url) => {
+      trackPageView(url);
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <AuthProvider>
+      {/* 1. Google Analytics 4 Scripts (Condicionado por Feature Flag y Measurement ID válido) */}
+      {cfg.gaEnabled && cfg.gaId && (
+        <>
+          <Script
+            strategy='afterInteractive'
+            src={`https://www.googletagmanager.com/gtag/js?id=${cfg.gaId}`}
+          />
+          <Script
+            id='gtag-init'
+            strategy='afterInteractive'
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${cfg.gaId}', {
+                  page_path: window.location.pathname,
+                });
+              `,
+            }}
+          />
+        </>
+      )}
+
+      {/* 2. Vercel Web Analytics Component (Condicionado por Feature Flag) */}
+      {cfg.vercelEnabled && <Analytics />}
+
       <Component {...pageProps} />
       <FloatingAuthBadge />
     </AuthProvider>
@@ -58,3 +106,4 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
+

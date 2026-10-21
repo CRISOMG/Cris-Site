@@ -17,6 +17,18 @@ export default function FeaturesMatrixTab() {
       vipAvailability: true,
       showMetrics: true,
       extendedBrandTools: true,
+      analytics: {
+        googleAnalytics: {
+          enabled: true,
+          measurementId: 'G-H1PTK51HKX',
+        },
+        vercelAnalytics: {
+          enabled: true,
+        },
+        internalAnalytics: {
+          enabled: true,
+        },
+      },
     },
     links: {
       whatsapp: {
@@ -130,6 +142,38 @@ export default function FeaturesMatrixTab() {
       flags: {
         ...prev.flags,
         [key]: !prev.flags[key],
+      },
+    }));
+  };
+
+  const toggleAnalyticsFlag = (providerKey) => {
+    setConfig((prev) => ({
+      ...prev,
+      flags: {
+        ...prev.flags,
+        analytics: {
+          ...prev.flags?.analytics,
+          [providerKey]: {
+            ...prev.flags?.analytics?.[providerKey],
+            enabled: !prev.flags?.analytics?.[providerKey]?.enabled,
+          },
+        },
+      },
+    }));
+  };
+
+  const updateGaMeasurementId = (id) => {
+    setConfig((prev) => ({
+      ...prev,
+      flags: {
+        ...prev.flags,
+        analytics: {
+          ...prev.flags?.analytics,
+          googleAnalytics: {
+            ...prev.flags?.analytics?.googleAnalytics,
+            measurementId: id,
+          },
+        },
       },
     }));
   };
@@ -473,6 +517,198 @@ export default function FeaturesMatrixTab() {
                 }`}
               />
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* MATRIZ DE FEATURE FLAGS DE ANALÍTICA */}
+      <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4'>
+        <div className='border-b border-white/10 pb-3 flex items-center justify-between'>
+          <div>
+            <div className='flex items-center gap-2'>
+              <span className='text-lg'>📊</span>
+              <h3 className='text-base font-bold text-[#F7EFC5]'>Matriz de Analíticas & Medición de Tráfico</h3>
+            </div>
+            <p className='text-xs text-white/60'>
+              Activa o desactiva de forma granular Google Analytics, Vercel Web Analytics y el motor interno de métricas.
+            </p>
+          </div>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          {/* Provider 1: Google Analytics 4 */}
+          <div
+            className={`rounded-2xl border p-4.5 transition-all flex flex-col justify-between space-y-3 ${
+              config.flags?.analytics?.googleAnalytics?.enabled
+                ? 'bg-white/5 border-amber-500/30 shadow-md'
+                : 'bg-black/25 border-white/5 opacity-60'
+            }`}
+          >
+            <div className='space-y-2'>
+              <div className='flex items-start justify-between gap-3'>
+                <div className='flex items-center gap-2.5'>
+                  <div className='w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-lg'>
+                    🌐
+                  </div>
+                  <div>
+                    <div className='flex items-center gap-2'>
+                      <h4 className='text-xs font-bold text-white'>Google Analytics 4</h4>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          config.flags?.analytics?.googleAnalytics?.enabled
+                            ? 'bg-[#6DB758]/20 text-[#6DB758] border border-[#6DB758]/30'
+                            : 'bg-white/10 text-white/50'
+                        }`}
+                      >
+                        {config.flags?.analytics?.googleAnalytics?.enabled ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </div>
+                    <span className='text-[10px] text-white/50'>Panel GA4 externo</span>
+                  </div>
+                </div>
+
+                <button
+                  type='button'
+                  onClick={() => toggleAnalyticsFlag('googleAnalytics')}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    config.flags?.analytics?.googleAnalytics?.enabled ? 'bg-[#6DB758]' : 'bg-white/20'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                      config.flags?.analytics?.googleAnalytics?.enabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <p className='text-[11px] text-white/60 leading-relaxed'>
+                Mide usuarios únicos, sesiones, dispositivos y fuentes de tráfico en Google Analytics.
+              </p>
+            </div>
+
+            <div>
+              <label className='block text-[10px] font-semibold text-white/70 mb-1'>Measurement ID (G-XXXXXXXXXX)</label>
+              <input
+                type='text'
+                value={config.flags?.analytics?.googleAnalytics?.measurementId || ''}
+                onChange={(e) => updateGaMeasurementId(e.target.value)}
+                placeholder='G-XXXXXXXXXX'
+                className='w-full rounded-xl bg-black/40 border border-white/10 px-3 py-1.5 text-xs text-[#F7EFC5] focus:outline-none focus:border-[#FFAA5B] font-mono'
+              />
+            </div>
+          </div>
+
+          {/* Provider 2: Vercel Web Analytics */}
+          <div
+            className={`rounded-2xl border p-4.5 transition-all flex flex-col justify-between space-y-3 ${
+              config.flags?.analytics?.vercelAnalytics?.enabled
+                ? 'bg-white/5 border-white/20 shadow-md'
+                : 'bg-black/25 border-white/5 opacity-60'
+            }`}
+          >
+            <div className='space-y-2'>
+              <div className='flex items-start justify-between gap-3'>
+                <div className='flex items-center gap-2.5'>
+                  <div className='w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold text-white'>
+                    ▲
+                  </div>
+                  <div>
+                    <div className='flex items-center gap-2'>
+                      <h4 className='text-xs font-bold text-white'>Vercel Analytics</h4>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          config.flags?.analytics?.vercelAnalytics?.enabled
+                            ? 'bg-[#6DB758]/20 text-[#6DB758] border border-[#6DB758]/30'
+                            : 'bg-white/10 text-white/50'
+                        }`}
+                      >
+                        {config.flags?.analytics?.vercelAnalytics?.enabled ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </div>
+                    <span className='text-[10px] text-white/50'>Edge @vercel/analytics</span>
+                  </div>
+                </div>
+
+                <button
+                  type='button'
+                  onClick={() => toggleAnalyticsFlag('vercelAnalytics')}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    config.flags?.analytics?.vercelAnalytics?.enabled ? 'bg-[#6DB758]' : 'bg-white/20'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                      config.flags?.analytics?.vercelAnalytics?.enabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <p className='text-[11px] text-white/60 leading-relaxed'>
+                Medición nativa sin cookies en Vercel. Excelente privacidad y no es bloqueado por adblockers.
+              </p>
+            </div>
+
+            <div className='p-2.5 rounded-xl bg-black/30 border border-white/5 text-[10px] text-white/50'>
+              ✓ Integrado con el componente oficial <code>&lt;Analytics /&gt;</code> en _app.js.
+            </div>
+          </div>
+
+          {/* Provider 3: Analítica Interna */}
+          <div
+            className={`rounded-2xl border p-4.5 transition-all flex flex-col justify-between space-y-3 ${
+              config.flags?.analytics?.internalAnalytics?.enabled
+                ? 'bg-white/5 border-[#6DB758]/30 shadow-md'
+                : 'bg-black/25 border-white/5 opacity-60'
+            }`}
+          >
+            <div className='space-y-2'>
+              <div className='flex items-start justify-between gap-3'>
+                <div className='flex items-center gap-2.5'>
+                  <div className='w-9 h-9 rounded-xl bg-[#6DB758]/15 border border-[#6DB758]/30 flex items-center justify-center text-lg'>
+                    📈
+                  </div>
+                  <div>
+                    <div className='flex items-center gap-2'>
+                      <h4 className='text-xs font-bold text-white'>Analítica Interna</h4>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          config.flags?.analytics?.internalAnalytics?.enabled
+                            ? 'bg-[#6DB758]/20 text-[#6DB758] border border-[#6DB758]/30'
+                            : 'bg-white/10 text-white/50'
+                        }`}
+                      >
+                        {config.flags?.analytics?.internalAnalytics?.enabled ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </div>
+                    <span className='text-[10px] text-white/50'>En tu propio panel</span>
+                  </div>
+                </div>
+
+                <button
+                  type='button'
+                  onClick={() => toggleAnalyticsFlag('internalAnalytics')}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    config.flags?.analytics?.internalAnalytics?.enabled ? 'bg-[#6DB758]' : 'bg-white/20'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                      config.flags?.analytics?.internalAnalytics?.enabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <p className='text-[11px] text-white/60 leading-relaxed'>
+                Registra clics en WhatsApp, redes y visitas con hash anónimo de IP sin cookies de rastreo.
+              </p>
+            </div>
+
+            <div className='p-2.5 rounded-xl bg-black/30 border border-white/5 text-[10px] text-white/50'>
+              ✓ Datos visualizables en la pestaña <strong>📊 Analíticas</strong> de este panel.
+            </div>
           </div>
         </div>
       </div>
