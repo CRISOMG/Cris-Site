@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.8.2",
     "autoprefixer": "^10.6.1",
     "next": "^13.5.11",
     "nodemailer": "^10.1.7",
