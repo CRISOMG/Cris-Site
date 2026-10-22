@@ -10,10 +10,18 @@ import { getGradientTheme } from '../data/gradients';
 import LavaLampBackground from '../components/LavaLampBackground';
 import { trackEvent } from '../lib/analytics';
 
-export default function Home() {
+export default function Home({ initialConfig }) {
   const { isAuthenticated } = useAuth();
+  const [config, setConfig] = useState(initialConfig || socialConfig);
   const [secretClicks, setSecretClicks] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Sincronizar en cliente si cambian las props
+  useEffect(() => {
+    if (initialConfig) {
+      setConfig(initialConfig);
+    }
+  }, [initialConfig]);
 
   // Atajos de teclado sigilosos en el Home (Ctrl + K / Cmd + K o Ctrl + Shift + A)
   useEffect(() => {
@@ -54,7 +62,7 @@ export default function Home() {
     }
   }, [secretClicks]);
 
-  const activeGradientId = socialConfig.flags?.heroGradient || 'default';
+  const activeGradientId = config.flags?.heroGradient || 'default';
   const theme = getGradientTheme(activeGradientId);
 
   return (
@@ -133,7 +141,7 @@ export default function Home() {
           <h3 className='_font-nova-round font-bold italic text-xl '>Lifelong Learner at Platzi</h3>
         </div>
 
-        <SocialIcons />
+        <SocialIcons config={config} />
 
         {/* Solo visible si el propietario ha iniciado sesión */}
         {isAuthenticated && (
@@ -184,4 +192,30 @@ export default function Home() {
       `}</style>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  const { getServiceSupabase } = await import('../lib/supabaseClient');
+  const defaultSocial = await import('../data/social.json');
+  const supabase = getServiceSupabase();
+
+  let liveConfig = defaultSocial.default || defaultSocial;
+  if (supabase) {
+    try {
+      const { data: row } = await supabase
+        .from('site_config')
+        .select('data')
+        .eq('key', 'social')
+        .single();
+      if (row?.data) {
+        liveConfig = row.data;
+      }
+    } catch (_) {}
+  }
+
+  return {
+    props: {
+      initialConfig: liveConfig,
+    },
+  };
 }

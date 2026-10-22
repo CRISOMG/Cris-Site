@@ -227,8 +227,9 @@ export default function FeaturesMatrixTab() {
 
       if (logs.length > 0) setTerminalOutput(logs.join('\n'));
 
-      let msg = '✓ Matriz guardada exitosamente en el File System (src/data/social.json).';
+      let msg = '✓ Configuración sincronizada en la nube (Supabase & Vercel Blob). ¡Activa de inmediato!';
       if (data.results?.pushed) msg += ' ¡Sincronizado con GitHub (Push)!';
+      else if (data.results?.fileSaved) msg += ' ¡Copia local actualizada!';
 
       setStatus({
         type: data.results?.gitError && !data.results?.pushed ? 'warning' : 'success',
@@ -281,18 +282,18 @@ export default function FeaturesMatrixTab() {
           </div>
           <p className='text-xs text-white/60 max-w-2xl leading-relaxed'>
             Administra qué enlaces sociales están activos en el Home público (incluyendo WhatsApp, LinkedIn, GitHub, Platzi)
-            y oculta redes como Twitter/X o Figma con interruptores instantáneos. Guardado directo en{' '}
-            <code className='text-[#FFAA5B] bg-black/40 px-1 py-0.5 rounded'>src/data/social.json</code>.
+            y oculta redes como Twitter/X o Figma con interruptores instantáneos. Sincronización automática con{' '}
+            <strong className='text-[#6DB758]'>Supabase PostgreSQL</strong> y respaldo inmutable en <strong className='text-blue-300'>Vercel Blob</strong>.
           </p>
         </div>
 
-        <div className='flex items-center gap-2 shrink-0'>
-          <span className='px-2.5 py-1 rounded-full text-xs font-mono bg-white/5 border border-white/10 text-white/70 flex items-center gap-1.5'>
-            <span className='w-2 h-2 rounded-full bg-[#6DB758]' />
-            rama: <strong>{branch}</strong>
+        <div className='flex items-center gap-2 shrink-0 flex-wrap'>
+          <span className='px-2.5 py-1 rounded-full text-xs font-semibold bg-[#6DB758]/15 text-[#6DB758] border border-[#6DB758]/30 flex items-center gap-1.5'>
+            <span className='w-2 h-2 rounded-full bg-[#6DB758] animate-pulse' />
+            Cloud: Supabase Activo
           </span>
           <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${isDev ? 'bg-[#FFAA5B]/15 text-[#FFAA5B] border border-[#FFAA5B]/30' : 'bg-white/10 text-white/70'}`}>
-            {isDev ? 'Modo Dev (FS Activo)' : 'Producción'}
+            {isDev ? 'Modo Dev (Local)' : 'Producción (Vercel)'}
           </span>
         </div>
       </div>
@@ -847,20 +848,27 @@ export default function FeaturesMatrixTab() {
       {/* BARRA DE ACCIÓN Y GUARDADO */}
       <div className='bg-[#0D222D] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4'>
         <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-3'>
-          <label className='flex items-center gap-3 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={pushToGithub}
-              onChange={(e) => setPushToGithub(e.target.checked)}
-              className='rounded border-white/20 bg-black/40 text-[#FFAA5B] focus:ring-[#FFAA5B]'
-            />
-            <div className='text-xs'>
-              <span className='font-semibold text-[#F7EFC5]'>🚀 Subir al repositorio de GitHub (Push automático)</span>
-              <span className='text-white/40 block text-[11px]'>
-                Hará commit y push de <code className='text-[#6DB758]'>src/data/social.json</code> a <strong>{branch}</strong>.
-              </span>
+          {isDev ? (
+            <label className='flex items-center gap-3 cursor-pointer'>
+              <input
+                type='checkbox'
+                checked={pushToGithub}
+                onChange={(e) => setPushToGithub(e.target.checked)}
+                className='rounded border-white/20 bg-black/40 text-[#FFAA5B] focus:ring-[#FFAA5B]'
+              />
+              <div className='text-xs'>
+                <span className='font-semibold text-[#F7EFC5]'>🚀 Opcional: Subir también al repositorio de GitHub (Push)</span>
+                <span className='text-white/40 block text-[11px]'>
+                  Hace commit y push de <code className='text-[#6DB758]'>src/data/social.json</code> a <strong>{branch}</strong> además de guardar en la nube.
+                </span>
+              </div>
+            </label>
+          ) : (
+            <div className='text-xs text-white/70 flex items-center gap-2'>
+              <span className='w-2 h-2 rounded-full bg-[#6DB758] animate-pulse' />
+              <span>Guardado en la nube: los cambios se aplican de inmediato en tu web de producción.</span>
             </div>
-          </label>
+          )}
 
           <button
             type='button'
@@ -869,7 +877,7 @@ export default function FeaturesMatrixTab() {
             className={`px-6 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
               pushToGithub
                 ? 'bg-gradient-to-r from-[#6DB758] to-[#5BA546] text-white hover:brightness-110 shadow-lg shadow-[#6DB758]/20'
-                : 'bg-gradient-to-r from-[#FFAA5B] to-[#FBBF24] text-[#0D222D] hover:scale-[1.02] shadow-lg shadow-[#FFAA5B]/20'
+                : 'bg-gradient-to-r from-[#6DB758] via-[#5BA546] to-[#4D8C3A] text-white hover:scale-[1.02] shadow-lg shadow-[#6DB758]/25'
             } disabled:opacity-50`}
           >
             {saving ? (
@@ -878,10 +886,10 @@ export default function FeaturesMatrixTab() {
                   <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
                   <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v8H4z'></path>
                 </svg>
-                <span>Guardando...</span>
+                <span>Guardando en la Nube...</span>
               </>
             ) : (
-              <span>{pushToGithub ? '🚀 Guardar y Subir a GitHub' : '💾 Guardar en File System'}</span>
+              <span>{pushToGithub ? '🚀 Guardar en la Nube y Subir a GitHub' : '☁️ Guardar en la Nube (Instantáneo)'}</span>
             )}
           </button>
         </div>

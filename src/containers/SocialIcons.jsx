@@ -10,9 +10,10 @@ import {
 import socialConfig from '../data/social.json';
 import { trackEvent } from '../lib/analytics';
 
-export default function SocialIcons() {
-  const { links } = socialConfig;
-  const isDark = socialConfig.flags?.heroGradient === 'dark-blooker-amber';
+export default function SocialIcons({ config }) {
+  const currentConfig = config || socialConfig;
+  const links = currentConfig.links || socialConfig.links;
+  const isDark = currentConfig.flags?.heroGradient === 'dark-blooker-amber';
 
   // Mapa de componentes SVG según la clave
   const iconMap = {

@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import util from 'util';
 import { verifySessionToken, extractToken } from '../../../lib/authSession';
 import { getServiceSupabase } from '../../../lib/supabaseClient';
+import { saveBlob } from '../../../lib/blobStorage';
 
 const execPromise = util.promisify(exec);
 const SOCIAL_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'social.json');
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
         success: true,
         data: socialData || {},
         branch: currentBranch,
-        isDev: process.env.NODE_ENV !== 'production',
+        isDev: process.env.NODE_ENV !== 'production' && !process.env.VERCEL,
         cloudSync: Boolean(supabase),
       });
     } catch (error) {
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. POST: Guardar cambios en la matriz y opcionalmente Git Commit/Push
+  // 2. POST: Guardar cambios en Supabase, Vercel Blob y opcionalmente local/Git
   if (req.method === 'POST') {
     const token = extractToken(req);
     const session = verifySessionToken(token);
@@ -85,6 +86,8 @@ export default async function handler(req, res) {
 
     const results = {
       fileSaved: false,
+      supabaseSaved: false,
+      blobSaved: false,
       gitActionExecuted: gitAction,
       gitCommitOutput: null,
       gitPushOutput: null,
@@ -93,31 +96,55 @@ export default async function handler(req, res) {
     };
 
     try {
-      // Guardar en el file system
-      const dir = path.dirname(SOCIAL_FILE_PATH);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(SOCIAL_FILE_PATH, JSON.stringify(newConfig, null, 2) + '\n', 'utf8');
-      results.fileSaved = true;
-
-      // Guardar también en la nube de Supabase (PostgreSQL en tiempo real)
+      // A. Guardar en la nube de Supabase (PostgreSQL en tiempo real - Alta Prioridad)
       if (supabase) {
         try {
-          await supabase.from('site_config').upsert({
+          const { error: supaErr } = await supabase.from('site_config').upsert({
             key: 'social',
             data: newConfig,
             updated_at: new Date().toISOString(),
           });
-          results.supabaseSaved = true;
+          if (!supaErr) {
+            results.supabaseSaved = true;
+          } else {
+            results.supabaseError = supaErr.message;
+          }
         } catch (supaErr) {
           results.supabaseError = supaErr.message;
         }
       }
 
-      // Git Commit y/o Push
-      if (gitAction === 'commit' || gitAction === 'push') {
+      // B. Guardar snapshot en Vercel Blob (Respaldo inmutable en la nube)
+      try {
+        const blobRes = await saveBlob('config/social.json', JSON.stringify(newConfig, null, 2), {
+          access: 'public',
+          addRandomSuffix: false,
+        });
+        results.blobSaved = true;
+        results.blobUrl = blobRes?.url;
+        results.blobProvider = blobRes?.provider;
+      } catch (blobErr) {
+        results.blobError = blobErr.message;
+      }
+
+      // C. Guardar en el sistema de archivos local (solo si no es entorno de solo lectura como Vercel)
+      try {
+        const dir = path.dirname(SOCIAL_FILE_PATH);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(SOCIAL_FILE_PATH, JSON.stringify(newConfig, null, 2) + '\n', 'utf8');
+        results.fileSaved = true;
+      } catch (fsErr) {
+        results.fileSaved = false;
+        results.fsNote = 'File system en solo lectura (entorno Serverless en Vercel)';
+      }
+
+      // D. Git Commit y/o Push (solo en entornos locales con Git activo)
+      const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+      if (isServerless) {
+        results.gitActionExecuted = 'skipped_in_serverless';
+      } else if (gitAction === 'commit' || gitAction === 'push') {
         try {
           await execPromise('git add src/data/social.json', { cwd: process.cwd(), timeout: 10000 });
 
@@ -160,7 +187,7 @@ export default async function handler(req, res) {
 
       return res.status(200).json({
         success: true,
-        message: 'Matriz de características guardada correctamente.',
+        message: 'Configuración guardada en la nube (Supabase & Vercel Blob).',
         data: newConfig,
         results,
       });
