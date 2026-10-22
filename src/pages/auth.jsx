@@ -231,6 +231,16 @@ export default function AuthPage() {
               }}
               className='space-y-6'
             >
+              {/* Campo Honeypot invisible para atrapar bots automatizados */}
+              <input
+                type='text'
+                name='website_url'
+                tabIndex={-1}
+                autoComplete='off'
+                aria-hidden='true'
+                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', height: 0, width: 0, left: '-9999px' }}
+              />
+
               {/* Casillas numéricas */}
               <div className='flex justify-between items-center gap-2 sm:gap-3' onPaste={handlePaste}>
                 {digits.map((digit, idx) => (

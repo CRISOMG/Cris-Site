@@ -11,24 +11,34 @@ const OTP_EXPIRATION_MS = 5 * 60 * 1000; // 5 minutos de validez
  * Solo viaja un hash HMAC(código + expiración + secret), lo que permite que cualquier
  * instancia efímera de Lambda en Vercel valide el código sin necesidad de base de datos compartida.
  */
-export function generateStatelessOtp() {
+export function generateStatelessOtp(initialAttempts = 0) {
   // Generar código numérico de 6 dígitos
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = Date.now() + OTP_EXPIRATION_MS;
   const nonce = crypto.randomBytes(8).toString('hex');
+  const maxAttempts = 5;
 
-  // Firmar con HMAC-SHA256 usando SESSION_SECRET
+  // Firmar código original con HMAC-SHA256 usando SESSION_SECRET
   const payloadToSign = `${code}:${expiresAt}:${nonce}`;
   const signature = crypto
     .createHmac('sha256', SESSION_SECRET)
     .update(payloadToSign)
     .digest('hex');
 
-  // Empaquetar solo metadatos públicos y la firma criptográfica
+  // Firmar también los intentos para que el cliente no pueda adulterar el contador
+  const attemptSignature = crypto
+    .createHmac('sha256', SESSION_SECRET)
+    .update(`${signature}:${initialAttempts}:${maxAttempts}`)
+    .digest('hex');
+
+  // Empaquetar solo metadatos públicos y las firmas criptográficas
   const challengeData = JSON.stringify({
     sig: signature,
     exp: expiresAt,
     n: nonce,
+    att: initialAttempts,
+    max: maxAttempts,
+    asig: attemptSignature,
   });
 
   const challengeToken = Buffer.from(challengeData).toString('base64');
@@ -72,17 +82,38 @@ export function verifyStatelessOtp(submittedCode, challengeToken) {
 
   try {
     const raw = Buffer.from(challengeToken, 'base64').toString('utf8');
-    const { sig, exp, n } = JSON.parse(raw);
+    const { sig, exp, n, att = 0, max = 5, asig } = JSON.parse(raw);
 
     if (!sig || !exp || !n) {
       return { valid: false, reason: 'Token de verificación inválido' };
     }
 
-    // Verificar si expiró
+    // Verificar firma de intentos si viene en el token
+    if (asig) {
+      const expectedAttemptSig = crypto
+        .createHmac('sha256', SESSION_SECRET)
+        .update(`${sig}:${att}:${max}`)
+        .digest('hex');
+
+      if (asig !== expectedAttemptSig) {
+        return { valid: false, reason: 'Token de verificación manipulado o inválido' };
+      }
+    }
+
+    // Verificar si expiró por tiempo
     if (Date.now() > exp) {
       return {
         valid: false,
         reason: 'El código OTP ha expirado (5 minutos de validez). Solicita uno nuevo.',
+      };
+    }
+
+    // Verificar si ya se superó el límite de intentos (Máximo 5 fallos por código)
+    if (att >= max) {
+      return {
+        valid: false,
+        reason: 'Límite de 5 intentos superado. Este código ha sido invalidado por seguridad. Solicita un nuevo código.',
+        tokenExhausted: true,
       };
     }
 
@@ -105,7 +136,41 @@ export function verifyStatelessOtp(submittedCode, challengeToken) {
       };
     }
 
-    return { valid: false, reason: 'Código OTP incorrecto' };
+    // Código erróneo: Incrementar intentos y emitir nuevo challenge token firmado
+    const newAtt = att + 1;
+    const remainingAttempts = Math.max(0, max - newAtt);
+
+    if (newAtt >= max) {
+      return {
+        valid: false,
+        reason: 'Código OTP incorrecto. Has alcanzado el límite máximo de 5 intentos. El código ha sido invalidado por seguridad.',
+        tokenExhausted: true,
+        attemptsRemaining: 0,
+      };
+    }
+
+    const updatedAttemptSig = crypto
+      .createHmac('sha256', SESSION_SECRET)
+      .update(`${sig}:${newAtt}:${max}`)
+      .digest('hex');
+
+    const updatedChallengeData = JSON.stringify({
+      sig,
+      exp,
+      n,
+      att: newAtt,
+      max,
+      asig: updatedAttemptSig,
+    });
+
+    const updatedChallengeToken = Buffer.from(updatedChallengeData).toString('base64');
+
+    return {
+      valid: false,
+      reason: `Código OTP incorrecto. Te quedan ${remainingAttempts} intento(s).`,
+      attemptsRemaining: remainingAttempts,
+      updatedChallengeToken,
+    };
   } catch (error) {
     console.error('Error al procesar challenge token:', error);
     return { valid: false, reason: 'Error procesando la verificación' };

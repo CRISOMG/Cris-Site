@@ -111,6 +111,9 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ code, challengeToken }),
       });
       const data = await res.json();
+      if (data.updatedChallengeToken) {
+        setChallengeToken(data.updatedChallengeToken);
+      }
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Código de seguridad incorrecto');
       }

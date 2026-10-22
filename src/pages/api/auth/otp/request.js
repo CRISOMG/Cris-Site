@@ -1,10 +1,40 @@
 import { generateStatelessOtp } from '../../../../lib/otpStore';
 import { sendOtpEmail } from '../../../../lib/mailer';
+import { checkRateLimit, recordAttempt } from '../../../../lib/rateLimit';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Método no permitido' });
   }
+
+  // 1. Detección de Bots por Honeypot
+  if (req.body?.website_url) {
+    return res.status(200).json({ success: true, message: 'Solicitud procesada' });
+  }
+
+  // 2. Rate Limiting por IP (Máx 3 solicitudes cada 60s, con bloqueo de 15m)
+  const rateLimitCheck = await checkRateLimit(req, {
+    action: 'otp_request',
+    maxAttempts: 3,
+    windowMs: 60 * 1000,
+    lockoutMs: 15 * 60 * 1000,
+  });
+
+  if (!rateLimitCheck.allowed) {
+    return res.status(429).json({
+      success: false,
+      message: rateLimitCheck.reason,
+      remainingSeconds: rateLimitCheck.remainingSeconds,
+    });
+  }
+
+  // Registrar solicitud en la ventana
+  await recordAttempt(req, {
+    action: 'otp_request',
+    maxAttempts: 3,
+    windowMs: 60 * 1000,
+    lockoutMs: 15 * 60 * 1000,
+  });
 
   try {
     // Generar OTP con token criptográfico sin estado (Stateless HMAC para Vercel)
