@@ -24,7 +24,7 @@ export default function AuthPage() {
   // Sigilo total: si el usuario no tiene intención activa ni está autenticado, no permitir acceso
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/private');
+      router.replace('/admin');
       return;
     }
 
@@ -128,7 +128,7 @@ export default function AuthPage() {
       await verifyOtp(code);
       setSuccess(true);
       setTimeout(() => {
-        router.push('/private');
+        router.push('/admin');
       }, 1000);
     } catch (err) {
       setError(err.message || 'Código incorrecto o expirado');

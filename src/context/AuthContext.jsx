@@ -24,35 +24,15 @@ export function AuthProvider({ children }) {
   const [emailInfo, setEmailInfo] = useState(null);
   const [challengeToken, setChallengeToken] = useState(null);
 
-  // Cargar sesión guardada al iniciar
-  useEffect(() => {
+  const logout = useCallback(() => {
+    setUser(null);
+    setToken(null);
+    setEmailInfo(null);
+    setChallengeToken(null);
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.expiresAt && Date.now() < parsed.expiresAt) {
-          setUser(parsed.user);
-          setToken(parsed.token);
-          // Validar con el backend en segundo plano
-          fetch('/api/auth/session', {
-            headers: { Authorization: `Bearer ${parsed.token}` },
-          })
-            .then((r) => r.json())
-            .then((res) => {
-              if (!res.authenticated) {
-                logout();
-              }
-            })
-            .catch(() => {});
-        } else {
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      }
-    } catch (e) {
-      console.error('Error cargando sesión:', e);
-    } finally {
-      setIsLoading(false);
-    }
+      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(INTENT_KEY);
+    } catch (e) {}
   }, []);
 
   const triggerAuthIntent = useCallback(() => {
@@ -78,6 +58,84 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem(INTENT_KEY);
     } catch (e) {}
   }, []);
+
+  // Cargar sesión guardada o procesar token compartido (?token=...)
+  useEffect(() => {
+    const loadFromStorage = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.expiresAt && Date.now() < parsed.expiresAt) {
+            setUser(parsed.user);
+            setToken(parsed.token);
+            // Validar con el backend en segundo plano
+            fetch('/api/auth/session', {
+              headers: { Authorization: `Bearer ${parsed.token}` },
+            })
+              .then((r) => r.json())
+              .then((res) => {
+                if (!res.authenticated) {
+                  logout();
+                }
+              })
+              .catch(() => {});
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        }
+      } catch (e) {
+        console.error('Error cargando sesión local:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    try {
+      // 1. Verificar si viene un token de acceso rápido compartido en la URL (?token=... o ?auth=...)
+      let queryToken = null;
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        queryToken = urlParams.get('token') || urlParams.get('auth');
+      }
+
+      if (queryToken) {
+        fetch('/api/auth/session', {
+          headers: { Authorization: `Bearer ${queryToken}` },
+        })
+          .then((r) => r.json())
+          .then((res) => {
+            if (res.authenticated && res.user) {
+              setUser(res.user);
+              setToken(queryToken);
+              localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                  token: queryToken,
+                  user: res.user,
+                  expiresAt: res.expiresAt,
+                })
+              );
+              // Limpiar el parámetro de la URL sin recargar para no exponer el token en pantalla
+              const cleanUrl = new URL(window.location.href);
+              cleanUrl.searchParams.delete('token');
+              cleanUrl.searchParams.delete('auth');
+              window.history.replaceState({}, document.title, cleanUrl.pathname + (cleanUrl.search || ''));
+            } else {
+              loadFromStorage();
+            }
+          })
+          .catch(() => loadFromStorage())
+          .finally(() => setIsLoading(false));
+        return;
+      }
+
+      loadFromStorage();
+    } catch (e) {
+      console.error('Error procesando sesión:', e);
+      setIsLoading(false);
+    }
+  }, [logout]);
 
   const requestOtp = useCallback(async (force = false) => {
     try {
@@ -138,17 +196,6 @@ export function AuthProvider({ children }) {
       throw err;
     }
   }, [challengeToken, clearAuthIntent]);
-
-  const logout = useCallback(() => {
-    setUser(null);
-    setToken(null);
-    setEmailInfo(null);
-    setChallengeToken(null);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      sessionStorage.removeItem(INTENT_KEY);
-    } catch (e) {}
-  }, []);
 
   return (
     <AuthContext.Provider

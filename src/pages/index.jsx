@@ -147,10 +147,10 @@ export default function Home({ initialConfig }) {
         {isAuthenticated && (
           <div className='mt-4 flex flex-wrap items-center justify-center gap-3'>
             <Link
-              href='/private'
+              href='/admin'
               className='inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0D222D] hover:bg-[#07151C] text-[#FFAA5B] text-sm font-semibold backdrop-blur-md transition-all hover:scale-105 border border-[#FFAA5B]/50 shadow-xl'
             >
-              <span>🔐 Bóveda Privada</span>
+              <span>🔐 Panel Admin</span>
               <span className='text-xs bg-[#6DB758] text-white px-1.5 py-0.5 rounded-full font-mono'>Activo</span>
             </Link>
 
