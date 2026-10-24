@@ -1,18 +1,5 @@
-import { SignJWT, importPKCS8 } from 'jose';
+import { SignJWT } from 'jose';
 import { verifySync } from 'otplib';
-
-function parsePrivateKey(raw) {
-  if (!raw) return '';
-  let str = raw.trim();
-  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
-    try {
-      str = JSON.parse(str);
-    } catch (e) {
-      str = str.slice(1, -1);
-    }
-  }
-  return str.replace(/\\n/g, '\n');
-}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -27,19 +14,13 @@ export default async function handler(req, res) {
   }
 
   // 2. Candado de cliente: Debe coincidir con CF_CLIENT_ID configurado
-  const expectedClientId = process.env.CF_CLIENT_ID || 'cloudflare-access-crisomg';
-  if (clientId !== expectedClientId) {
+  const expectedClientId = (process.env.CF_CLIENT_ID || 'cloudflare-access-crisomg').trim();
+  if (clientId.trim() !== expectedClientId) {
     return res.status(403).json({ success: false, message: 'Client ID no reconocido' });
   }
 
-  // 3. Candado de redirección: Debe ser exactamente un callback de cloudflareaccess.com
-  const expectedCallback = process.env.CF_CALLBACK_URL;
-  if (expectedCallback && redirectUri !== expectedCallback) {
-    // Si está configurado CF_CALLBACK_URL estricto, validar coincidencia exacta
-    if (!redirectUri.includes('.cloudflareaccess.com/cdn-cgi/access/callback')) {
-      return res.status(403).json({ success: false, message: 'Redirect URI no autorizada' });
-    }
-  } else if (!redirectUri.includes('.cloudflareaccess.com/cdn-cgi/access/callback')) {
+  // 3. Candado de redirección: Debe ser un callback de cloudflareaccess.com
+  if (!redirectUri.includes('.cloudflareaccess.com/cdn-cgi/access/callback')) {
     return res.status(403).json({ success: false, message: 'Redirect URI inválida para Cloudflare Access' });
   }
 
@@ -59,25 +40,20 @@ export default async function handler(req, res) {
     });
   }
 
-  // 5. Generar código de autorización firmado temporal (expira en 60 segundos)
-  const privateKeyPem = process.env.OIDC_PRIVATE_KEY;
-  if (!privateKeyPem) {
-    return res.status(500).json({ success: false, message: 'Falta OIDC_PRIVATE_KEY en variables de entorno' });
-  }
-
+  // 5. Generar código de autorización temporal (expira en 60 segundos) firmado con SESSION_SECRET (HS256)
   try {
-    const pem = parsePrivateKey(privateKeyPem);
-    const privateKey = await importPKCS8(pem, 'RS256');
+    const sessionSecret = process.env.SESSION_SECRET || 'cris-site-secret-token-key-2026';
+    const secretKey = new TextEncoder().encode(sessionSecret);
 
     const authCode = await new SignJWT({
       email: (email || 'cristiancaraballo112@gmail.com').trim(),
       totp_verified: true,
-      client_id: clientId,
+      client_id: clientId.trim(),
     })
-      .setProtectedHeader({ alg: 'RS256', typ: 'JWT' })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setIssuedAt()
       .setExpirationTime('60s')
-      .sign(privateKey);
+      .sign(secretKey);
 
     const callbackUrl = new URL(redirectUri);
     callbackUrl.searchParams.set('code', authCode);

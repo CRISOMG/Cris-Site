@@ -1,15 +1,18 @@
 import { SignJWT, jwtVerify, importPKCS8 } from 'jose';
+import querystring from 'querystring';
+
+function cleanStr(val) {
+  if (!val) return '';
+  let str = String(val).trim();
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1);
+  }
+  return str.trim();
+}
 
 function parsePrivateKey(raw) {
   if (!raw) return '';
-  let str = raw.trim();
-  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
-    try {
-      str = JSON.parse(str);
-    } catch (e) {
-      str = str.slice(1, -1);
-    }
-  }
+  let str = cleanStr(raw);
   return str.replace(/\\n/g, '\n');
 }
 
@@ -18,60 +21,88 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
-  // Cloudflare Access puede enviar application/x-www-form-urlencoded o application/json
-  const body = req.body || {};
+  // 1. Extraer body independientemente de si viene como objeto o como string urlencoded
+  let body = req.body || {};
+  if (typeof body === 'string') {
+    try {
+      body = querystring.parse(body);
+    } catch (e) {
+      try {
+        body = JSON.parse(body);
+      } catch (err) {}
+    }
+  }
 
-  // 1. Validar autenticación de cliente (Basic Auth o parámetros de body)
+  // 2. Extraer y normalizar credenciales del cliente
   const authHeader = req.headers.authorization || '';
-  const expectedClientId = process.env.CF_CLIENT_ID || 'cloudflare-access-crisomg';
-  const expectedSecret = process.env.CF_CLIENT_SECRET;
+  const expectedClientId = cleanStr(process.env.CF_CLIENT_ID || 'cloudflare-access-crisomg');
+  const expectedSecret = cleanStr(process.env.CF_CLIENT_SECRET || '');
 
-  let clientId = body.client_id;
-  let clientSecret = body.client_secret;
+  let clientId = cleanStr(body.client_id);
+  let clientSecret = cleanStr(body.client_secret);
 
+  // Soporte para HTTP Basic Auth
   if (authHeader.startsWith('Basic ')) {
     try {
-      const decoded = Buffer.from(authHeader.replace('Basic ', ''), 'base64').toString('utf8');
-      const [u, p] = decoded.split(':');
-      clientId = clientId || u;
-      clientSecret = clientSecret || p;
-    } catch (e) {}
+      const base64Part = authHeader.replace('Basic ', '').trim();
+      const decoded = Buffer.from(base64Part, 'base64').toString('utf8');
+      const colonIndex = decoded.indexOf(':');
+      if (colonIndex !== -1) {
+        clientId = clientId || cleanStr(decoded.substring(0, colonIndex));
+        clientSecret = clientSecret || cleanStr(decoded.substring(colonIndex + 1));
+      }
+    } catch (e) {
+      console.error('Error decodificando Basic Auth:', e);
+    }
   }
 
-  if (expectedSecret && (clientId !== expectedClientId || clientSecret !== expectedSecret)) {
-    return res.status(401).json({ error: 'invalid_client', error_description: 'Client credentials invalid' });
+  // Si se configuró CF_CLIENT_SECRET, validar coincidencia (tolerante a espacios)
+  if (expectedSecret) {
+    if (clientSecret !== expectedSecret) {
+      console.error('Client secret mismatch en Cloudflare token exchange:', {
+        hasReceivedSecret: Boolean(clientSecret),
+        receivedLength: clientSecret?.length,
+        expectedLength: expectedSecret?.length,
+      });
+      return res.status(401).json({
+        error: 'invalid_client',
+        error_description: 'Client secret does not match CF_CLIENT_SECRET',
+      });
+    }
   }
 
-  // 2. Extraer y verificar el código temporal de autorización
-  const code = body.code;
+  // 3. Extraer y verificar el código temporal de autorización (firmado con SESSION_SECRET HS256)
+  const code = cleanStr(body.code);
   if (!code) {
     return res.status(400).json({ error: 'invalid_request', error_description: 'Missing code parameter' });
   }
 
-  const privateKeyPem = process.env.OIDC_PRIVATE_KEY;
-  if (!privateKeyPem) {
-    return res.status(500).json({ error: 'server_error', error_description: 'OIDC_PRIVATE_KEY not configured' });
-  }
-
   try {
-    const pem = parsePrivateKey(privateKeyPem);
-    const privateKey = await importPKCS8(pem, 'RS256');
+    const sessionSecret = process.env.SESSION_SECRET || 'cris-site-secret-token-key-2026';
+    const secretKey = new TextEncoder().encode(sessionSecret);
 
-    // Verificar firma y expiración del código
-    const { payload } = await jwtVerify(code, privateKey);
+    const { payload } = await jwtVerify(code, secretKey);
 
-    // 3. CANDADO INNEGOCIABLE: Solo emitir token si fue validado con 2FA
+    // Candado estricto: ¿superó el 2FA de Google Authenticator?
     if (!payload.totp_verified) {
       return res.status(403).json({
         error: 'access_denied',
-        error_description: 'Autorización 2FA de Google Authenticator no confirmada',
+        error_description: 'Autorización 2FA no confirmada',
       });
     }
+
+    // 4. Firmar el ID Token OIDC (RS256) que Cloudflare Access consumirá y verificará con el JWKS
+    const privateKeyPem = process.env.OIDC_PRIVATE_KEY;
+    if (!privateKeyPem) {
+      return res.status(500).json({ error: 'server_error', error_description: 'OIDC_PRIVATE_KEY not configured' });
+    }
+
+    const pem = parsePrivateKey(privateKeyPem);
+    const privateKey = await importPKCS8(pem, 'RS256');
 
     const email = payload.email || 'cristiancaraballo112@gmail.com';
     const issuer = process.env.OIDC_ISSUER || 'https://www.crisomg.link';
 
-    // 4. Firmar el ID Token OIDC que Cloudflare Access consumirá
     const idToken = await new SignJWT({
       email,
       email_verified: true,
