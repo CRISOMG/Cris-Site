@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
+import { trackEvent } from '../lib/analytics';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -21,23 +22,16 @@ export default function AuthPage() {
 
   const inputsRef = useRef([]);
 
-  // Sigilo total: si el usuario no tiene intención activa ni está autenticado, no permitir acceso
+  // Redirección si ya está autenticado
   useEffect(() => {
     if (isAuthenticated) {
       router.replace('/admin');
       return;
     }
 
-    if (!hasAuthIntent()) {
-      setIsAllowed(false);
-      setCheckingIntent(false);
-      router.replace('/');
-      return;
-    }
-
     setIsAllowed(true);
     setCheckingIntent(false);
-  }, [isAuthenticated, hasAuthIntent, router]);
+  }, [isAuthenticated, router]);
 
   // Temporizador de cuenta regresiva
   useEffect(() => {
@@ -205,12 +199,12 @@ export default function AuthPage() {
             </div>
 
             <h1 className='text-2xl sm:text-3xl font-bold tracking-tight text-[#F7EFC5] mb-2'>
-              {success ? 'Identidad Autorizada' : 'Verificación de Seguridad'}
+              {success ? 'Identidad Autorizada' : 'Acceso al Panel Privado'}
             </h1>
             <p className='text-sm text-[#F7EFC5]/80 max-w-xs mx-auto'>
               {success
                 ? 'Sesión autorizada. Accediendo al espacio protegido...'
-                : 'Ingresa el código OTP de 6 dígitos que fue enviado a tu correo registrado.'}
+                : 'Ingresa el código 2FA de Google Authenticator o el código OTP de 6 dígitos.'}
             </p>
           </div>
 
@@ -332,6 +326,34 @@ export default function AuthPage() {
                 </button>
               </div>
             </form>
+          )}
+
+          {/* Botón de solicitud de acceso 2FA vía WhatsApp para interesados en la marca personal */}
+          {!success && (
+            <div className='mt-8 pt-6 border-t border-white/10 text-center'>
+              <p className='text-xs text-[#F7EFC5]/75 mb-3 font-medium'>
+                ¿Interesado en mi trabajo o marca personal?
+              </p>
+              <a
+                href='https://wa.me/584128315538?text=Hola%20Cristian,%20me%20gustar%C3%ADa%20conocer%20m%C3%A1s%20sobre%20tu%20trabajo%20y%20marca%20personal.%20%C2%BFPodr%C3%ADas%20compartirme%20un%20c%C3%B3digo%202FA%20temporal%20para%20acceder%20a%20tu%20panel%20admin%3F'
+                target='_blank'
+                rel='noopener noreferrer'
+                onClick={() => {
+                  trackEvent({
+                    action: 'whatsapp_2fa_request_click',
+                    category: 'auth_page',
+                    label: 'Solicitud de 2FA por WhatsApp',
+                    metadata: { destination: 'whatsapp_chat' },
+                  });
+                }}
+                className='w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wide text-white bg-[#25D366]/20 hover:bg-[#25D366]/30 border border-[#25D366]/50 hover:border-[#25D366] transition-all duration-200 flex items-center justify-center gap-2.5 shadow-[0_4px_20px_rgba(37,211,102,0.2)] hover:scale-[1.01] active:scale-[0.99] group'
+              >
+                <svg className='w-5 h-5 fill-[#25D366] group-hover:scale-110 transition-transform shrink-0' viewBox='0 0 24 24'>
+                  <path d='M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.22 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.84-.86 2.06 0 1.21.89 2.39 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z' />
+                </svg>
+                <span>Solicitar código 2FA vía WhatsApp</span>
+              </a>
+            </div>
           )}
         </div>
       </main>

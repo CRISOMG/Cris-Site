@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { verifySync } from 'otplib';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'cris-site-secret-token-key-2026';
 const OTP_EXPIRATION_MS = 5 * 60 * 1000; // 5 minutos de validez
@@ -52,7 +53,8 @@ export function generateStatelessOtp(initialAttempts = 0) {
 }
 
 /**
- * Valida un código OTP enviado contra el Challenge Token criptográfico o el PIN Maestro
+ * Valida un código OTP enviado contra el Challenge Token criptográfico o el 2FA de Google Authenticator
+ * (MASTER_OTP ha sido completamente invalidado y sustituido por TOTP).
  * Compatible con cold starts y múltiples instancias en Vercel.
  */
 export function verifyStatelessOtp(submittedCode, challengeToken) {
@@ -61,15 +63,22 @@ export function verifyStatelessOtp(submittedCode, challengeToken) {
   }
 
   const cleanCode = submittedCode.toString().trim();
-  const masterOtp = (process.env.MASTER_OTP || '777888').trim();
 
-  // 1. PIN Maestro de respaldo configurado en .env
-  if (cleanCode === masterOtp) {
-    return {
-      valid: true,
-      type: 'master_pin',
-      message: 'Acceso autorizado mediante PIN Maestro',
-    };
+  // 1. Verificación de Google Authenticator 2FA (Reemplaza y sustituye permanentemente a MASTER_OTP)
+  const totpSecret = (process.env.ADMIN_TOTP_SECRET || process.env.OIDC_TOTP_SECRET || '').trim();
+  if (totpSecret && cleanCode.length === 6 && /^\d+$/.test(cleanCode)) {
+    try {
+      const result = verifySync({ token: cleanCode, secret: totpSecret });
+      if (result && result.valid) {
+        return {
+          valid: true,
+          type: 'totp_2fa',
+          message: 'Acceso autorizado mediante Google Authenticator (2FA)',
+        };
+      }
+    } catch (err) {
+      console.error('Error validando TOTP 2FA:', err);
+    }
   }
 
   // 2. Validación sin estado (Stateless Cryptographic Challenge)
