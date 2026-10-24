@@ -1,5 +1,18 @@
 import { SignJWT, jwtVerify, importPKCS8 } from 'jose';
 
+function parsePrivateKey(raw) {
+  if (!raw) return '';
+  let str = raw.trim();
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    try {
+      str = JSON.parse(str);
+    } catch (e) {
+      str = str.slice(1, -1);
+    }
+  }
+  return str.replace(/\\n/g, '\n');
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'method_not_allowed' });
@@ -41,8 +54,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const parsedPem = typeof privateKeyPem === 'string' ? JSON.parse(privateKeyPem) : privateKeyPem;
-    const privateKey = await importPKCS8(parsedPem, 'RS256');
+    const pem = parsePrivateKey(privateKeyPem);
+    const privateKey = await importPKCS8(pem, 'RS256');
 
     // Verificar firma y expiración del código
     const { payload } = await jwtVerify(code, privateKey);

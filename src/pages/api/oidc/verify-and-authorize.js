@@ -1,6 +1,19 @@
 import { SignJWT, importPKCS8 } from 'jose';
 import { verifySync } from 'otplib';
 
+function parsePrivateKey(raw) {
+  if (!raw) return '';
+  let str = raw.trim();
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    try {
+      str = JSON.parse(str);
+    } catch (e) {
+      str = str.slice(1, -1);
+    }
+  }
+  return str.replace(/\\n/g, '\n');
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Método no permitido' });
@@ -53,8 +66,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const parsedPem = typeof privateKeyPem === 'string' ? JSON.parse(privateKeyPem) : privateKeyPem;
-    const privateKey = await importPKCS8(parsedPem, 'RS256');
+    const pem = parsePrivateKey(privateKeyPem);
+    const privateKey = await importPKCS8(pem, 'RS256');
 
     const authCode = await new SignJWT({
       email: (email || 'cristiancaraballo112@gmail.com').trim(),

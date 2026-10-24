@@ -9,7 +9,13 @@ export default function handler(req, res) {
   }
 
   try {
-    const publicJwk = typeof rawJwk === 'string' ? JSON.parse(rawJwk) : rawJwk;
+    let publicJwk = rawJwk;
+    if (typeof publicJwk === 'string') {
+      publicJwk = JSON.parse(publicJwk);
+      if (typeof publicJwk === 'string') {
+        publicJwk = JSON.parse(publicJwk);
+      }
+    }
     // OIDC JWKS spec requires returning keys in a keys array
     res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     return res.status(200).json({
