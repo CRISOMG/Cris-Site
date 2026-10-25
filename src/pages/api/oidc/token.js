@@ -108,6 +108,7 @@ export default async function handler(req, res) {
       email_verified: true,
       name: 'Cristian Caraballo',
       preferred_username: 'crisomg',
+      groups: ['admin'],
     })
       .setProtectedHeader({ alg: 'RS256', kid: 'crisomg-key-1', typ: 'JWT' })
       .setIssuer(issuer)
